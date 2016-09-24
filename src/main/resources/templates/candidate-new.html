@@ -8,6 +8,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
     <script src="https://apps-static.flock.co/js-sdk/0.1.0/flock.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
 
     <!-- ACE and its JavaScript mode and theme files -->
@@ -18,20 +21,16 @@
     <script src="js/util.js"></script>
     <script src="js/initfirepad.js"></script>
     <script src="js/createCandidate.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/bootstrap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
     <script type="text/javascript">
             $(function () {
                 $('#timepicker').datetimepicker({
-                    format: 'LT'
+                    format: 'HH:mm'
                 });
             });
 
             $(function () {
                 $('#datepicker').datetimepicker({
-                    format: 'DD-MM-YYYY'
+                    format: 'DD/MM/YYYY'
                 });
             });
     </script>
@@ -47,14 +46,20 @@
                     <span class="input-group-addon">@</span>
                     <input type='text' class="form-control" id="name" placeholder="Candidate Name" value="John Doe"/>
                 </div>
+                <br/>
+
                 <div class="form-group input-group">
                     <span class="input-group-addon"><span class="glyphicon-envelope"></span></span>
                     <input type='text' class="form-control" id="email" placeholder="Candidate Email" value="ayush.j@flock.co"/>
                 </div>
+                <br/>
+
                 <div class="form-group input-group">
                     <span class="input-group-addon"><span class="glyphicon glyphicon-file"></span></span>
                     <input type='text' class="form-control" id="cv_link" placeholder="Candidate CV" value="http://google.com"/>
                 </div>
+                <br/>
+
                 <div class="form-group input-group">
                     <span class="input-group-addon"><span class="glyphicon glyphicon-briefcase"></span></span>
                     <select id="role" class="form-control">
@@ -73,26 +78,33 @@
                         <option value="" disabled selected style="display: none;">Select Interviewer</option>
                     </select>
                 </div>
+                <br/>
+
                 <div class="form-group input-group">
                     <span class="input-group-addon">?</span>
                     <select id="question" class="form-control">
                         <option value="" disabled selected style="display: none;">Select Question</option>
                     </select>
                 </div>
+                <br/>
+
                 <div class="form-group input-group date" id="datepicker">
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-calendar"></span>
                     </span>
-                    <input type='text' class="form-control"/>
+                    <input type='text' data-format="dd-MM-yyyy" class="form-control"/>
                 </div>
+                <br/>
+
                 <div class="form-group input-group date" id="timepicker">
                     <span class="input-group-addon">
                         <span class="glyphicon glyphicon-time"></span>
                     </span>
-                    <input type='text' class="form-control"/>
+                    <input type='text' data-format="hh:mm" class="form-control"/>
                 </div>
             </div>
         </div>
+        <br/>
     </div>
     <button id="submit" type="submit" class="btn btn-primary" style="margin: 0 auto; display:block;">Submit</button>
 </form>

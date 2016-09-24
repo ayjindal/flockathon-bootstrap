@@ -14,7 +14,10 @@ $(document).ready(function()
          role = $("#role").val();
          interviewerId = $('#interviewer').val();
          question = $("#question").val();
-//         time = getTime($("#time").val());
+         date = $("#datepicker").find("input").val();
+         time = $("#timepicker").find("input").val();
+         time = getTime(date + " " + time);
+         console.log("time: " + time);
          createCandidate();
          flock.close();
      });
@@ -24,10 +27,10 @@ $(document).ready(function()
          getQuestions(role);
      });
 
-//     function getTime(dateString) {
-//        var parts = dateString.match(/(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})/);
-//        return Date.UTC(+parts[3], parts[2]-1, +parts[1], +parts[4], +parts[5]);
-//     }
+     function getTime(dateString) {
+        var parts = dateString.match(/(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})/);
+        return Date.UTC(+parts[3], parts[2]-1, +parts[1], +parts[4], +parts[5]);
+     }
 
      function getInterviewers(groupId) {
         console.log("Get interviewers for group: " + groupId + ", user: " + userId);
@@ -60,7 +63,6 @@ $(document).ready(function()
      }
 
      function createCandidate() {
-          time = (new Date).getTime();
           collabLink = getInterviewPadUrl();
           console.log("collabLink: " + collabLink);
           payload =
