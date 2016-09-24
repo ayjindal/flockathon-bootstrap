@@ -10,7 +10,7 @@ import spark.template.mustache.MustacheTemplateEngine;
 
 import java.util.*;
 
-import static co.flock.bootstrap.database.Candidate.*;
+import static co.flock.bootstrap.database.Candidate.ROLE;
 import static spark.Spark.*;
 
 public class Runner
@@ -143,6 +143,11 @@ public class Runner
             jsonObject.put("rounds", rounds);
 
             return jsonObject;
+        });
+
+        get("/interviewers", (req, res) -> {
+            String groupId = req.queryParams("groupId");
+            return "";
         });
 
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
