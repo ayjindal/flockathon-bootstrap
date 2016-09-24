@@ -19,9 +19,6 @@ public class Candidate
     @DatabaseField(columnName = DbConstants.Fields.CV_LINK, canBeNull = false)
     private String _cvLink;
 
-    @DatabaseField(columnName = DbConstants.Fields.RT_LINK, canBeNull = false)
-    private String _rtLink;
-
     @DatabaseField(columnName = DbConstants.Fields.ROLE, dataType = DataType.ENUM_INTEGER, canBeNull = false)
     private ROLE _role;
 
@@ -50,11 +47,6 @@ public class Candidate
         return _cvLink;
     }
 
-    public String getRtLink()
-    {
-        return _rtLink;
-    }
-
     public ROLE getRole()
     {
         return _role;
@@ -73,7 +65,6 @@ public class Candidate
                 ", _name='" + _name + '\'' +
                 ", _creatorId='" + _creatorId + '\'' +
                 ", _cvLink='" + _cvLink + '\'' +
-                ", _rtLink='" + _rtLink + '\'' +
                 ", _role='" + _role + '\'' +
                 '}';
     }
