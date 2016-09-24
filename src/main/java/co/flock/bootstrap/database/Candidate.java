@@ -1,35 +1,80 @@
 package co.flock.bootstrap.database;
 
+import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
-@DatabaseTable(tableName = "candidate")
+@DatabaseTable(tableName = DbConstants.Table.CANDIDATE)
 public class Candidate
 {
-    @DatabaseField(id = true, columnName = "id", canBeNull = false)
-    private String _id;
-    @DatabaseField(columnName = "email", canBeNull = false)
+    @DatabaseField(id = true, columnName = DbConstants.Fields.EMAIL, canBeNull = false)
     private String _email;
 
-    @DatabaseField(columnName = "name", canBeNull = false)
+    @DatabaseField(columnName = DbConstants.Fields.NAME, canBeNull = false)
     private String _name;
+
+    @DatabaseField(columnName = DbConstants.Fields.CREATOR_ID, canBeNull = false)
+    private String _creatorId;
+
+    @DatabaseField(columnName = DbConstants.Fields.CV_LINK, canBeNull = false)
+    private String _cvLink;
+
+    @DatabaseField(columnName = DbConstants.Fields.RT_LINK, canBeNull = false)
+    private String _rtLink;
+
+    @DatabaseField(columnName = DbConstants.Fields.ROLE, dataType = DataType.ENUM_INTEGER, canBeNull = false)
+    private ROLE _role;
+
 
     public Candidate()
     {
     }
 
-    public String get_id()
-    {
-        return _id;
-    }
-
-    public String get_email()
+    public String getEmail()
     {
         return _email;
     }
 
-    public String get_name()
+    public String getName()
     {
         return _name;
+    }
+
+    public String getCreatorId()
+    {
+        return _creatorId;
+    }
+
+    public String getCvLink()
+    {
+        return _cvLink;
+    }
+
+    public String getRtLink()
+    {
+        return _rtLink;
+    }
+
+    public ROLE getRole()
+    {
+        return _role;
+    }
+
+    public enum ROLE
+    {
+        PLATFORM, APPLICATION;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Candidate{" +
+                "_email='" + _email + '\'' +
+                ", _name='" + _name + '\'' +
+                ", _creatorId='" + _creatorId + '\'' +
+                ", _cvLink='" + _cvLink + '\'' +
+                ", _rtLink='" + _rtLink + '\'' +
+                ", _role='" + _role + '\'' +
+                '}';
     }
 }
