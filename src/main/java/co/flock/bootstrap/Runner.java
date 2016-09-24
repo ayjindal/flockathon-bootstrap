@@ -193,7 +193,7 @@ public class Runner
         });
 
         get("/launcher-button-view", (req, res) -> new ModelAndView(getLauncherButtonView(req.queryParams("flockEvent")),
-                "launcher-view.mustache"), new MustacheTemplateEngine());
+                "launcher-view.html"), new MustacheTemplateEngine());
 
         get("/interviewers", (req, res) -> {
             String groupId = req.queryParams("groupId");
