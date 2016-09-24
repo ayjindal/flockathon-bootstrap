@@ -98,6 +98,21 @@ public class Runner
             return "";
         });
 
+        post("/update", (req, res) -> {
+            JSONObject jsonObject = new JSONObject(req.body());
+
+            String email = jsonObject.getString("email");
+            String interviewerId = jsonObject.getString("interviewer_id");
+            String comments = jsonObject.getString("comments");
+            String rating = jsonObject.getString("rating");
+            String verdict = jsonObject.getString("verdict");
+            Float ratingFloat = Float.parseFloat(rating);
+            Round.VERDICT v = verdict.equalsIgnoreCase("pass") ? Round.VERDICT.PASS : Round.VERDICT.REJECT;
+            _dbManager.updateRound(email, interviewerId, comments, ratingFloat, v);
+            return "";
+        });
+
+
         get("/questions", (req, res) -> {
 
             String roleString = req.queryParams("role");

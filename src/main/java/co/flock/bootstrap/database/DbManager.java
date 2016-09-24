@@ -98,6 +98,23 @@ public class DbManager
         return _roundDao.query(preparedQuery);
     }
 
+    public void updateRound(String email, String interviewerId, String comments, Float rating, Round.VERDICT verdict) throws SQLException
+    {
+        QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
+        queryBuilder.where().eq(DbConstants.Fields.INTERVIEWER_ID, interviewerId);
+        queryBuilder.where().eq(DbConstants.Fields.EMAIL, email);
+        PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
+        List<Round> rounds = _roundDao.query(preparedQuery);
+
+        if (rounds.size() > 0) {
+            Round round = rounds.get(0);
+            round.setComments(comments);
+            round.setRating(rating);
+            round.setVerdict(verdict);
+            _roundDao.update(round);
+        }
+    }
+
     private void setupDatabase(DbConfig dbConfig) throws SQLException
     {
         JdbcPooledConnectionSource connectionSource = new JdbcPooledConnectionSource(
