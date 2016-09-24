@@ -16,7 +16,7 @@ public class MessagingService
 {
     private static final Logger _logger = Logger.getLogger(MessagingService.class);
     private static final Pattern _whitespacePattern = Pattern.compile("\\s+");
-
+    private static final String BOT_TOKEN = "c0532cdb-b59a-4605-94b5-cb8f244f02d3";
 
     public void sendCreationMessage(Candidate candidate, Round round, User user, User interviewer)
     {
@@ -52,11 +52,26 @@ public class MessagingService
     public void sendRoundEndedMessage(Candidate candidate, User interviewer, String verdict)
     {
         _logger.debug("sendRoundEndedMessage candidate: " + candidate + " interviewer: " + interviewer);
-        Message message = new Message(candidate.getGroupId(),
+        sendMessageToCreator(candidate, verdict);
+        sendMessageToInterviewer(candidate, interviewer, verdict);
+    }
+
+    private void sendMessageToInterviewer(Candidate candidate, User interviewer, String verdict)
+    {
+        Message message = new Message(interviewer.getId(),
+                "Thank you for taking the interview for" + candidate.getName());
+        String messageJson = new Gson().toJson(message);
+        _logger.debug("messageJson: " + messageJson);
+        sendMessage(BOT_TOKEN, message);
+    }
+
+    private void sendMessageToCreator(Candidate candidate, String verdict)
+    {
+        Message message = new Message(candidate.getCreatorId(),
                 "Interview ended for " + candidate.getName() +" Verdict: " + verdict);
         String messageJson = new Gson().toJson(message);
         _logger.debug("messageJson: " + messageJson);
-        sendMessage(interviewer.getToken(), message);
+        sendMessage(BOT_TOKEN, message);
     }
 
     public static String getTrimmedName(String senderName)
