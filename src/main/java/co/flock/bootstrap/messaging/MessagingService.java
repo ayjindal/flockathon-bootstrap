@@ -5,9 +5,7 @@ import co.flock.bootstrap.database.Candidate;
 import co.flock.bootstrap.database.Round;
 import co.flock.bootstrap.database.User;
 import co.flock.www.FlockApiClient;
-import co.flock.www.model.messages.Attachments.Attachment;
-import co.flock.www.model.messages.Attachments.View;
-import co.flock.www.model.messages.Attachments.WidgetView;
+import co.flock.www.model.messages.Attachments.*;
 import co.flock.www.model.messages.FlockMessage;
 import co.flock.www.model.messages.Message;
 import com.google.gson.Gson;
@@ -30,6 +28,15 @@ public class MessagingService
         String widgetUrl = Runner.getBaseUrl() + "interviewer-view" + "?email=" + candidate.getEmail();
         widgetView.setSrc(widgetUrl);
         Attachment attachment = new Attachment();
+
+        Button[] buttons = new Button[1];
+        buttons[0] = new Button();
+        buttons[0].setName("View");
+        Action action = new Action();
+        action.addOpenWidget(widgetUrl, "modal", "modal");
+        buttons[0].setAction(action);
+        attachment.setButtons(buttons);
+
         View view = new View();
         view.setWidget(widgetView);
         view.setFlockml("<flockml> Name: " + candidate.getName() + "<br />" + "Collabedit Link: " + round.getCollabLink() + "</flockml>");
