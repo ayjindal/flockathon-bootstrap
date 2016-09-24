@@ -48,7 +48,7 @@ public class Runner
             return "";
         });
 
-        get("/interviewer-view", (req, res) -> new ModelAndView(map, "index.html"),
+        get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
                 new MustacheTemplateEngine());
     }
 
