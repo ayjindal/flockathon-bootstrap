@@ -2,9 +2,9 @@ package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
 import co.flock.bootstrap.database.Question.LEVEL;
-import co.flock.bootstrap.database.User;
+import co.flock.bootstrap.messaging.MessagingService;
 import co.flock.www.FlockApiClient;
-import co.flock.www.model.*;
+import co.flock.www.model.PublicProfile;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,7 +13,6 @@ import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +25,7 @@ public class Runner
     private static final Logger _logger = Logger.getLogger(Runner.class);
     private static DbManager _dbManager;
     private static final ScheduledExecutorService _executorService = Executors.newScheduledThreadPool(1);
+    private static MessagingService _messagingService = new MessagingService();
 
     public static void main(String[] args) throws Exception
     {
@@ -87,9 +87,12 @@ public class Runner
             Long scheduledTime = round.getLong("scheduled_time");
             String collabLink = round.getString("collab_link");
 
-            _dbManager.insertOrUpdateCandidate(new Candidate(email, name, creatorId, cvLink, role));
-            _dbManager.insertOrUpdateRound(new Round(email, interviewerId, 1, collabLink, questionId, new Date(scheduledTime)));
-
+            Candidate candidateObj = new Candidate(email, name, creatorId, cvLink, role);
+            _dbManager.insertOrUpdateCandidate(candidateObj);
+            Round roundObj = new Round(email, interviewerId, 1, collabLink, questionId, new Date(scheduledTime));
+            _dbManager.insertOrUpdateRound(roundObj);
+            User user = _dbManager.getUserById(candidateObj.getCreatorId());
+            _messagingService.sendCreationMessage(candidateObj, roundObj, user.getToken());
             return "";
         });
 
