@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
 
+import java.sql.SQLException;
 import java.util.*;
 
 import static co.flock.bootstrap.database.Candidate.*;
@@ -143,6 +144,9 @@ public class Runner
             return jsonObject;
         });
 
+        get("/launcher-button-view", (req, res) -> new ModelAndView(getLauncherButtonView(req.queryParams("flockEvent")),
+                "launcher-view.mustache"), new MustacheTemplateEngine());
+
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
                 new MustacheTemplateEngine());
 
@@ -180,5 +184,16 @@ public class Runner
         return new DbConfig(bundle.getString("db_host"),
                 Integer.parseInt(bundle.getString("db_port")), bundle.getString("db_name"),
                 bundle.getString("db_username"), bundle.getString("db_password"));
+    }
+
+    private static Map<String, List<Round>> getLauncherButtonView(String queryString) throws SQLException
+    {
+        JSONObject jsonObject = new JSONObject(queryString);
+        String userId = jsonObject.getString("userId");
+        List<Round> roundsTaken = _dbManager.getRoundsOwnedByUser(userId);
+        Map<String, List<Round>> s = new HashMap<>();
+        s.put("roundsTaken", roundsTaken);
+        _logger.debug("roundsTaken:" + roundsTaken);
+        return s;
     }
 }

@@ -114,4 +114,12 @@ public class DbManager
         _questionDao = DaoManager.createDao(connectionSource, Question.class);
     }
 
+    public List<Round> getRoundsOwnedByUser(String userId) throws SQLException
+    {
+        QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
+        queryBuilder.where().eq(DbConstants.Fields.INTERVIEWER_ID, userId);
+        PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
+        return _roundDao.query(preparedQuery);
+    }
+
 }
