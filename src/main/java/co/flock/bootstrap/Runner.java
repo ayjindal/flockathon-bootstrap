@@ -6,6 +6,7 @@ import co.flock.bootstrap.mail.MailServer;
 import co.flock.bootstrap.messaging.MessagingService;
 import co.flock.www.FlockApiClient;
 import co.flock.www.model.PublicProfile;
+import co.flock.www.model.messages.Message;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -25,6 +26,7 @@ import static spark.Spark.*;
 public class Runner
 {
     private static final Logger _logger = Logger.getLogger(Runner.class);
+    private static final int MILLIS_IN_FIFTEEN_MINS = 15 * 60 * 1000;
     private static DbManager _dbManager;
     private static final ScheduledExecutorService _executorService = Executors.newScheduledThreadPool(1);
     private static MessagingService _messagingService = new MessagingService();
@@ -101,10 +103,12 @@ public class Runner
             _messagingService.sendCreationMessage(candidateObj, roundObj, creator, interviewer);
             MailServer.sendEmail(candidateObj.getEmail(), roundObj.getScheduledTime(),
                     roundObj.getCollabLink().replace("interviewer-view", "candidate-view"));
+            scheduleReminderIfNeeded(scheduledTime, creator, interviewer);
             return "";
         });
 
         post("/update", (req, res) -> {
+            _logger.debug("Got request with body: " + req.body());
             JSONObject jsonObject = new JSONObject(req.body());
 
             String email = jsonObject.getString("email");
@@ -115,6 +119,10 @@ public class Runner
             Float ratingFloat = Float.parseFloat(rating);
             Round.VERDICT v = verdict.equalsIgnoreCase("pass") ? Round.VERDICT.PASS : Round.VERDICT.REJECT;
             _dbManager.updateRound(email, interviewerId, comments, ratingFloat, v);
+            Candidate candidate = _dbManager.getCandidateByEmail(email);
+            User user = _dbManager.getUserById(interviewerId);
+            _messagingService.sendRoundEndedMessage(candidate, user, verdict);
+            _logger.debug("Done updating the round");
             return "";
         });
 
@@ -238,6 +246,20 @@ public class Runner
 
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
+    }
+
+    private static void scheduleReminderIfNeeded(Long scheduledTime, User creator, User interviewer)
+    {
+        long current = System.currentTimeMillis();
+        long diff = scheduledTime - current;
+        if (diff > MILLIS_IN_FIFTEEN_MINS) {
+            long scheduleAfter = scheduledTime - MILLIS_IN_FIFTEEN_MINS;
+            _executorService.schedule((Runnable) () -> {
+                SimpleDateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, hh:mm aaa");
+                Message message = new Message(interviewer.getId(), "Reminder : You have an interview scheduled at " + df.format(scheduledTime));
+                MessagingService.sendMessage(creator.getToken(), message);
+            }, scheduleAfter, TimeUnit.MILLISECONDS);
+        }
     }
 
     private static Map<String, String> getPreviewMap(String email) throws SQLException
