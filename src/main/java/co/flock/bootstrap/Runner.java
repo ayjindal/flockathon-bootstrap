@@ -2,9 +2,9 @@ package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
 import org.apache.log4j.Logger;
+import org.json.JSONObject;
 import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -86,6 +86,9 @@ public class Runner
         });
 
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
+                new MustacheTemplateEngine());
+
+        get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
     }
 
