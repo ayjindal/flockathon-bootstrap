@@ -110,10 +110,12 @@ public class Runner
             JSONObject jsonObject = new JSONObject();
 
             JSONObject candidateJsonObject = new JSONObject();
-            candidateJsonObject.put("name", candidate.getName());
-            candidateJsonObject.put("email", candidate.getEmail());
-            candidateJsonObject.put("cv_link", candidate.getCvLink());
-            candidateJsonObject.put("role", candidate.getRole());
+            if (candidate != null) {
+                candidateJsonObject.put("name", candidate.getName());
+                candidateJsonObject.put("email", candidate.getEmail());
+                candidateJsonObject.put("cv_link", candidate.getCvLink());
+                candidateJsonObject.put("role", candidate.getRole());
+            }
             jsonObject.put("candidate", candidateJsonObject);
 
             JSONArray rounds = new JSONArray();
