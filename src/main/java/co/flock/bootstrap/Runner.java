@@ -4,6 +4,8 @@ import co.flock.bootstrap.database.DbConfig;
 import co.flock.bootstrap.database.DbManager;
 import co.flock.bootstrap.database.User;
 import org.apache.log4j.Logger;
+import spark.ModelAndView;
+import spark.template.mustache.MustacheTemplateEngine;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -46,6 +48,8 @@ public class Runner
             return "";
         });
 
+        get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
+                new MustacheTemplateEngine());
     }
 
     private static DbConfig getDbConfig()
