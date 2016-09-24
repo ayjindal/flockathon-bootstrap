@@ -101,6 +101,48 @@ public class Runner
             return questions.toString();
         });
 
+        get("/history", (req, res) -> {
+
+            String email = req.queryParams("email");
+            Candidate candidate = _dbManager.getCandidateByEmail(email);
+            List<Round> candidateRounds = _dbManager.getCandidateRounds(email);
+
+            JSONObject jsonObject = new JSONObject();
+
+            JSONObject candidateJsonObject = new JSONObject();
+            candidateJsonObject.put("name", candidate.getName());
+            candidateJsonObject.put("email", candidate.getEmail());
+            candidateJsonObject.put("cv_link", candidate.getCvLink());
+            candidateJsonObject.put("role", candidate.getRole());
+            jsonObject.put("candidate", candidateJsonObject);
+
+            JSONArray rounds = new JSONArray();
+
+            for (Round round : candidateRounds) {
+                JSONObject roundJsonObject = new JSONObject();
+                roundJsonObject.put("interviewer_id", round.getInterviewerID());
+                roundJsonObject.put("sequence", round.getSequence());
+                roundJsonObject.put("verdict", round.getVerdict());
+                roundJsonObject.put("comments", round.getComments());
+                roundJsonObject.put("collab_link", round.getCollabLink());
+                roundJsonObject.put("rating", round.getRating());
+                roundJsonObject.put("scheduled_time", round.getScheduledTime());
+                Question question = _dbManager.getQuestionById(round.getQuestionID());
+                JSONObject ques = new JSONObject();
+                ques.put("id", question.getId());
+                ques.put("title", question.getTitle());
+                ques.put("level", question.getLevel());
+                ques.put("text", question.getText());
+                roundJsonObject.put("question", ques);
+
+                rounds.put(roundJsonObject);
+            }
+
+            jsonObject.put("rounds", rounds);
+
+            return jsonObject;
+        });
+
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
                 new MustacheTemplateEngine());
 

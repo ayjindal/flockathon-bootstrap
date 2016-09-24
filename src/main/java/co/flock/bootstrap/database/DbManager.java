@@ -58,6 +58,16 @@ public class DbManager
         return _userDao.queryForId(userID);
     }
 
+    public Candidate getCandidateByEmail(String email) throws SQLException
+    {
+        return _candidateDao.queryForId(email);
+    }
+
+    public Question getQuestionById(String id) throws SQLException
+    {
+        return _questionDao.queryForId(id);
+    }
+
     public List<User> getAllUsers() throws SQLException
     {
         return _userDao.queryForAll();
@@ -80,6 +90,14 @@ public class DbManager
         }
     }
 
+    public List<Round> getCandidateRounds(String email) throws SQLException
+    {
+        QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
+        queryBuilder.where().eq(DbConstants.Fields.EMAIL, email);
+        PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
+        return _roundDao.query(preparedQuery);
+    }
+
     private void setupDatabase(DbConfig dbConfig) throws SQLException
     {
         JdbcPooledConnectionSource connectionSource = new JdbcPooledConnectionSource(
@@ -95,4 +113,5 @@ public class DbManager
         _roundDao = DaoManager.createDao(connectionSource, Round.class);
         _questionDao = DaoManager.createDao(connectionSource, Question.class);
     }
+
 }
