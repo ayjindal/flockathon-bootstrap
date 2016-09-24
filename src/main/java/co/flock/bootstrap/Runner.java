@@ -70,6 +70,21 @@ public class Runner
             return "";
         });
 
+        get("/questions", (req, res) -> {
+
+            String roleString = req.queryParams("role");
+            ROLE role = null;
+            if (roleString != null) {
+                role = roleString.equalsIgnoreCase("platform") ? ROLE.PLATFORM : ROLE.APPLICATION;
+            }
+
+            String groupId = req.queryParams("groupId");
+
+            _dbManager.getQuestions(role);
+
+            return "";
+        });
+
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
                 new MustacheTemplateEngine());
     }

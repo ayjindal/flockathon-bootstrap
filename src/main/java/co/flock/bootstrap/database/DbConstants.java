@@ -7,6 +7,7 @@ public class DbConstants
         public static final String USER = "user";
         public static final String CANDIDATE = "candidate";
         public static final String ROUND = "round";
+        public static final String QUESTION = "question";
     }
 
     public static class Fields
@@ -17,7 +18,6 @@ public class DbConstants
         public static final String NAME = "name";
         public static final String CREATOR_ID = "creator_id";
         public static final String CV_LINK = "cv_link";
-        public static final String RT_LINK = "rt_link";
         public static final String ROLE = "role";
         public static final String INTERVIEWER_ID = "interviewer_id";
         public static final String SEQUENCE = "sequence";
@@ -27,5 +27,8 @@ public class DbConstants
         public static final String RATING = "rating";
         public static final String QUESTION_ID = "question_id";
         public static final String SCHEDULED_TIME = "scheduled_time";
+        public static final String GROUP_ID = "group_id";
+        public static final String TEXT = "text";
+        public static final String LEVEL = "level";
     }
 }
