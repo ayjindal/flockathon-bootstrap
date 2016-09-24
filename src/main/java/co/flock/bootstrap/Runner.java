@@ -2,9 +2,9 @@ package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
 import co.flock.bootstrap.database.Question.LEVEL;
-import co.flock.bootstrap.database.User;
+import co.flock.bootstrap.messaging.MessagingService;
 import co.flock.www.FlockApiClient;
-import co.flock.www.model.*;
+import co.flock.www.model.PublicProfile;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -13,7 +13,6 @@ import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.SQLException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +25,7 @@ public class Runner
     private static final Logger _logger = Logger.getLogger(Runner.class);
     private static DbManager _dbManager;
     private static final ScheduledExecutorService _executorService = Executors.newScheduledThreadPool(1);
+    private static MessagingService _messagingService = new MessagingService();
 
     public static void main(String[] args) throws Exception
     {
@@ -82,14 +82,19 @@ public class Runner
             String cvLink = candidate.getString("cv_link");
             ROLE role = candidate.getString("role").equalsIgnoreCase("platform") ? ROLE.PLATFORM : ROLE.APPLICATION;
             String creatorId = candidate.getString("creator_id");
+            String groupId = candidate.getString("group_id");
             String interviewerId = round.getString("interviewer_id");
             String questionId = round.getString("question_id");
             Long scheduledTime = round.getLong("scheduled_time");
             String collabLink = round.getString("collab_link");
 
-            _dbManager.insertOrUpdateCandidate(new Candidate(email, name, creatorId, cvLink, role));
-            _dbManager.insertOrUpdateRound(new Round(email, interviewerId, 1, collabLink, questionId, new Date(scheduledTime)));
-
+            Candidate candidateObj = new Candidate(email, name, creatorId, cvLink, role, groupId);
+            _dbManager.insertOrUpdateCandidate(candidateObj);
+            Round roundObj = new Round(email, interviewerId, 1, collabLink, questionId, new Date(scheduledTime));
+            _dbManager.insertOrUpdateRound(roundObj);
+            User creator = _dbManager.getUserById(candidateObj.getCreatorId());
+            User interviewer = _dbManager.getUserById(roundObj.getInterviewerID());
+            _messagingService.sendCreationMessage(candidateObj, roundObj, creator, interviewer);
             return "";
         });
 
@@ -231,6 +236,12 @@ public class Runner
         return new DbConfig(bundle.getString("db_host"),
                 Integer.parseInt(bundle.getString("db_port")), bundle.getString("db_name"),
                 bundle.getString("db_username"), bundle.getString("db_password"));
+    }
+
+    public static String getBaseUrl()
+    {
+        ResourceBundle bundle = ResourceBundle.getBundle("config", Locale.getDefault());
+        return bundle.getString("base_url");
     }
 
     private static Map<String, List<Round>> getLauncherButtonView(String queryString) throws SQLException
