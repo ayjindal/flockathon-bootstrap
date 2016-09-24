@@ -80,9 +80,7 @@ public class Runner
 
             String groupId = req.queryParams("groupId");
 
-            _dbManager.getQuestions(role);
-
-            return "";
+            return _dbManager.getQuestions(role);
         });
 
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
