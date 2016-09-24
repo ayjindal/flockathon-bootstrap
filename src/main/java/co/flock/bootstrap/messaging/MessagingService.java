@@ -59,7 +59,7 @@ public class MessagingService
         return contactName;
     }
 
-    private static void sendMessage(String token, Message message)
+    public static void sendMessage(String token, Message message)
     {
         _logger.debug("Sending message to  : " + message.getTo() + " text : " + message.getText());
         FlockMessage flockMessage = new FlockMessage(message);

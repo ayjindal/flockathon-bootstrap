@@ -5,6 +5,7 @@ import co.flock.bootstrap.database.Question.LEVEL;
 import co.flock.bootstrap.messaging.MessagingService;
 import co.flock.www.FlockApiClient;
 import co.flock.www.model.PublicProfile;
+import co.flock.www.model.messages.Message;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -24,6 +25,7 @@ import static spark.Spark.*;
 public class Runner
 {
     private static final Logger _logger = Logger.getLogger(Runner.class);
+    private static final int MILLIS_IN_FIFTEEN_MINS = 15 * 60 * 1000;
     private static DbManager _dbManager;
     private static final ScheduledExecutorService _executorService = Executors.newScheduledThreadPool(1);
     private static MessagingService _messagingService = new MessagingService();
@@ -96,6 +98,7 @@ public class Runner
             User creator = _dbManager.getUserById(candidateObj.getCreatorId());
             User interviewer = _dbManager.getUserById(roundObj.getInterviewerID());
             _messagingService.sendCreationMessage(candidateObj, roundObj, creator, interviewer);
+            scheduleReminderIfNeeded(scheduledTime, creator, interviewer);
             return "";
         });
 
@@ -230,6 +233,20 @@ public class Runner
 
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
+    }
+
+    private static void scheduleReminderIfNeeded(Long scheduledTime, User creator, User interviewer)
+    {
+        long current = System.currentTimeMillis();
+        long diff = scheduledTime - current;
+        if (diff > MILLIS_IN_FIFTEEN_MINS) {
+            long scheduleAfter = scheduledTime - MILLIS_IN_FIFTEEN_MINS;
+            _executorService.schedule((Runnable) () -> {
+                SimpleDateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, hh:mm aaa");
+                Message message = new Message(interviewer.getId(), "Reminder : You have an interview scheduled at " + df.format(scheduledTime));
+                MessagingService.sendMessage(creator.getToken(), message);
+            }, scheduleAfter, TimeUnit.MILLISECONDS);
+        }
     }
 
     private static Map<String, String> getPreviewMap(String email) throws SQLException
