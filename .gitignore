@@ -1,8 +1,6 @@
 /production
 /out
-!.idea
-.idea/*
-!.idea/codeStyleSettings.xml
-!.idea/runConfigurations/
+.idea
 target/*
 *.iml
+.DS_Store
