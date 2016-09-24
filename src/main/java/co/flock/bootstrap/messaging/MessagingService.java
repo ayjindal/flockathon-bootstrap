@@ -27,7 +27,8 @@ public class MessagingService
         Message message = new Message(candidate.getGroupId(), "@" + getTrimmedName(interviewer.getName()) + " Please help with this interview");
         message.setFlockml("<flockml><user userId=\"" + round.getInterviewerID() + "\">@" + getTrimmedName(interviewer.getName()) + "</user> Please take this interview</flockml>");
         WidgetView widgetView = new WidgetView();
-        widgetView.setSrc(Runner.getBaseUrl() + "interviewer-view" + "?candidate=" + candidate.getEmail());
+        String widgetUrl = Runner.getBaseUrl() + "interviewer-view" + "?email=" + candidate.getEmail();
+        widgetView.setSrc(widgetUrl);
         Attachment attachment = new Attachment();
         View view = new View();
         view.setWidget(widgetView);
