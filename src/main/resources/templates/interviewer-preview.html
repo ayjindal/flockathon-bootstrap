@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/pure-min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://apps-static.flock.co/js-sdk/0.1.0/flock.js"></script>
+<body>
+<div>
+    <div class="col-lg-4">
+        <div class="panel-group">
+            <div class="panel panel-default">
+                <div class="panel-heading">Candidate</div>
+                <div class="panel-body">
+                    Name: {{candidateName}}<br/>
+                    Email: {{email}}<br/>
+                    CV Link: {{cvLink}}<br/>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    Round: {{sequence}}
+                </div>
+                <div class="panel-body">
+                    <p>
+                        Collab Link: {{collabLink}} <br/>
+                        Ques: {{questionTitle}} <br/>
+                        Level: {{questionLevel}}<br/>
+                        Time: {{time}} <br/>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

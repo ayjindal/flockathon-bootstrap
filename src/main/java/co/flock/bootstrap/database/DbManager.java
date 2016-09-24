@@ -6,6 +6,7 @@ import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcPooledConnectionSource;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
@@ -94,6 +95,17 @@ public class DbManager
     {
         QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
         queryBuilder.where().eq(DbConstants.Fields.EMAIL, email);
+        PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
+        return _roundDao.query(preparedQuery);
+    }
+
+    public List<Round> getCandidateRounds(String email, String interviewerId) throws SQLException
+    {
+        QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
+        Where<Round, String> where = queryBuilder.where();
+        where.eq(DbConstants.Fields.EMAIL, email);
+        where.and();
+        where.eq(DbConstants.Fields.INTERVIEWER_ID, interviewerId);
         PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
         return _roundDao.query(preparedQuery);
     }
