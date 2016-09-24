@@ -1,17 +1,20 @@
 $(document).ready(function()
 {
      getQuestions("platform");
+     var event = getFlockEvent();
+     var userId = event.userId;
+     var groupId = event.chat;
+     console.log("groupId: " + groupId);
+     getInterviewers(groupId);
      $("#submit").click(function () {
          console.log("submit clicked")
          name = $("#name").val();
          email = $("#email").val();
          cvLink = $("#cv_link").val();
          role = $("#role").val();
+         interviewerId = $('#interviewer').val();
          question = $("#question").val();
          time = getTime($("#time").val());
-         event = getFlockEvent();
-         console.log("userId: " + event.userId);
-         console.log("chat: " + event.chat);
          createCandidate();
          flock.close();
      });
@@ -26,9 +29,23 @@ $(document).ready(function()
         return Date.UTC(+parts[3], parts[2]-1, +parts[1], +parts[4], +parts[5]);
      }
 
+     function getInterviewers(groupId) {
+        console.log("Get interviewers for group: " + groupId + ", user: " + userId);
+        url = baseUrl + "interviewers?userId=" + userId + "&groupId=" + groupId + "&sequence=1";
+        sendAjaxRequest(url, "get", null, function(response) {
+            interviewers = JSON.parse(response);
+             $.each(interviewers, function (i, interviewer) {
+                  $('#interviewer').append($('<option>', {
+                      value: interviewer.userId,
+                      text : interviewer.name
+                  }));
+             });
+        });
+     }
+
      function getQuestions(role) {
           console.log("Get questions for role: " + role)
-          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=g:123&sequence=1", "get", null, function (response) {
+          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=" + groupId + "&sequence=1", "get", null, function (response) {
             if(role == $('#role').val()) {
                   $('#question').html('');
                   questions = JSON.parse(response);
@@ -54,7 +71,7 @@ $(document).ready(function()
               },
               "round": {
                   "collab_link": "http://testCollabLink",
-                  "interviewer_id": "testinterviewerid",
+                  "interviewer_id": interviewerId,
                   "question_id": question,
                   "scheduled_time": JSON.stringify(time)
               }
