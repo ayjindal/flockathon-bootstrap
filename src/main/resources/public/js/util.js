@@ -1,4 +1,3 @@
-var baseUrl="https://5649ca12.ngrok.io/"
 function sendAjaxRequest(url, methodType, objectTobeSent, successCallback) {
     $.ajax({
         url: url,
