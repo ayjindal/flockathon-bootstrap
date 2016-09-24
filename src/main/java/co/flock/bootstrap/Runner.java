@@ -106,6 +106,7 @@ public class Runner
         });
 
         post("/update", (req, res) -> {
+            _logger.debug("Got request with body: " + req.body());
             JSONObject jsonObject = new JSONObject(req.body());
 
             String email = jsonObject.getString("email");
@@ -116,6 +117,10 @@ public class Runner
             Float ratingFloat = Float.parseFloat(rating);
             Round.VERDICT v = verdict.equalsIgnoreCase("pass") ? Round.VERDICT.PASS : Round.VERDICT.REJECT;
             _dbManager.updateRound(email, interviewerId, comments, ratingFloat, v);
+            Candidate candidate = _dbManager.getCandidateByEmail(email);
+            User user = _dbManager.getUserById(interviewerId);
+            _messagingService.sendRoundEndedMessage(candidate, user, verdict);
+            _logger.debug("Done updating the round");
             return "";
         });
 
