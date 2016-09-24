@@ -2,6 +2,8 @@ package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
 import co.flock.bootstrap.database.Question.LEVEL;
+import co.flock.www.FlockApiClient;
+import co.flock.www.model.PublicProfile;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -147,7 +149,25 @@ public class Runner
 
         get("/interviewers", (req, res) -> {
             String groupId = req.queryParams("groupId");
-            return "";
+            String userId = req.queryParams("userId");
+            User user = _dbManager.getUserById(userId);
+
+            if (user != null) {
+                FlockApiClient flockApiClient = new FlockApiClient(user.getToken());
+                PublicProfile[] groupMembers = flockApiClient.getGroupMembers(groupId);
+
+                JSONArray jsonArray = new JSONArray();
+                for (PublicProfile publicProfile : groupMembers) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("userId", publicProfile.getId());
+                    jsonObject.put("name", publicProfile.getFirstName() + ' ' + publicProfile.getLastName());
+                    jsonArray.put(jsonObject);
+                }
+
+                return jsonArray;
+            }
+
+            return "User doesnt exist";
         });
 
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
