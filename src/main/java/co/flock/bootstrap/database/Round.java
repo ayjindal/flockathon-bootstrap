@@ -4,6 +4,8 @@ import com.j256.ormlite.field.DataType;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.Date;
+
 @DatabaseTable(tableName = DbConstants.Table.ROUND)
 
 public class Round
@@ -35,15 +37,15 @@ public class Round
     @DatabaseField(columnName = DbConstants.Fields.QUESTION_ID, canBeNull = false)
     private String _questionID;
 
-    @DatabaseField(columnName = DbConstants.Fields.SCHEDULED_TIME, canBeNull = false)
-    private String _scheduledTime;
+    @DatabaseField(columnName = DbConstants.Fields.SCHEDULED_TIME, dataType = DataType.DATE, canBeNull = false)
+    private Date _scheduledTime;
 
 
     public Round()
     {
     }
 
-    public Round(String candidateEmail, String interviewerID, int sequence, String collabLink, String questionID, String scheduledTime)
+    public Round(String candidateEmail, String interviewerID, int sequence, String collabLink, String questionID, Date scheduledTime)
     {
         _candidateEmail = candidateEmail;
         _interviewerID = interviewerID;
@@ -98,7 +100,7 @@ public class Round
         return _questionID;
     }
 
-    public String getScheduledTime()
+    public Date getScheduledTime()
     {
         return _scheduledTime;
     }

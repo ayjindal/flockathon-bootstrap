@@ -7,10 +7,7 @@ import org.json.JSONObject;
 import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import static co.flock.bootstrap.database.Candidate.*;
 import static spark.Spark.*;
@@ -63,11 +60,11 @@ public class Runner
             String creatorId = candidate.getString("creator_id");
             String interviewerId = round.getString("interviewer_id");
             String questionId = round.getString("question_id");
-            String scheduledTime = round.getString("scheduled_time");
+            Long scheduledTime = round.getLong("scheduled_time");
             String collabLink = round.getString("collab_link");
 
             _dbManager.insertOrUpdateCandidate(new Candidate(email, name, creatorId, cvLink, role));
-            _dbManager.insertOrUpdateRound(new Round(email, interviewerId, 1, collabLink, questionId, scheduledTime));
+            _dbManager.insertOrUpdateRound(new Round(email, interviewerId, 1, collabLink, questionId, new Date(scheduledTime * 1000)));
 
             return "";
         });
