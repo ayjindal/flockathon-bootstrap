@@ -13,9 +13,15 @@
     <!-- Firepad -->
     <link rel="stylesheet" href="css/firepad.css"/>
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://apps-static.flock.co/js-sdk/0.1.0/flock.js"></script>
     <script src="https://cdn.firebase.com/libs/firepad/1.4.0/firepad.min.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/util.js"></script>
     <script src="js/initfirepad.js"></script>
+    <script src="js/interviewerView.js"></script>
     <style>
         html { height: 100%; }
         body { margin: 0; height: 100%; }
@@ -70,7 +76,7 @@
     <img src="images/resume.png" width="16px" height="16px"> &nbsp;
     <span id="candidate_cv">{{candidate.cvLink}}</span> &nbsp; &nbsp; &nbsp; &nbsp;
 
-    <button type="button" class="btn btn-primary btn-danger" style="float: right; margin-right: 15px">End Interview
+    <button type="button" id="end" class="btn btn-primary btn-danger" style="float: right; margin-right: 15px">End Interview
     </button>
 
 </div>
