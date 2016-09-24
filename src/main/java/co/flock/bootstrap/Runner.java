@@ -65,7 +65,7 @@ public class Runner
             String collabLink = round.getString("collab_link");
 
             _dbManager.insertOrUpdateCandidate(new Candidate(email, name, creatorId, cvLink, role));
-            _dbManager.insertOrUpdateRound(new Round(email, interviewerId, 1, collabLink, questionId, new Date(scheduledTime * 1000)));
+            _dbManager.insertOrUpdateRound(new Round(email, interviewerId, 1, collabLink, questionId, new Date(scheduledTime)));
 
             return "";
         });
