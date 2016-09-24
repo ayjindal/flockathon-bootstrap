@@ -2,8 +2,9 @@ package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
 import co.flock.bootstrap.database.Question.LEVEL;
+import co.flock.bootstrap.database.User;
 import co.flock.www.FlockApiClient;
-import co.flock.www.model.PublicProfile;
+import co.flock.www.model.*;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -11,6 +12,10 @@ import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
 
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import static co.flock.bootstrap.database.Candidate.ROLE;
 import static spark.Spark.*;
@@ -19,6 +24,7 @@ public class Runner
 {
     private static final Logger _logger = Logger.getLogger(Runner.class);
     private static DbManager _dbManager;
+    private static final ScheduledExecutorService _executorService = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws Exception
     {
@@ -38,8 +44,22 @@ public class Runner
             if ("app.install".equals(type)) {
                 String userId = jsonObject.getString("userId");
                 String userToken = jsonObject.getString("userToken");
-                _dbManager.insertOrUpdateUser(new User(userId, userToken));
+                User user = new User(userId, userToken);
+                _dbManager.insertOrUpdateUser(user);
                 _logger.debug("User inserted : " + userId + "  " + userToken);
+
+                _executorService.schedule((Runnable) () -> {
+                    try {
+                        FlockApiClient flockApiClient = new FlockApiClient(userToken);
+                        co.flock.www.model.User userInfo = flockApiClient.getUserInfo();
+                        user.setName(userInfo.getFirstName() + ' ' + userInfo.getLastName());
+                        _dbManager.insertOrUpdateUser(user);
+
+                    } catch (Exception e) {
+                        _logger.debug("Failed : ", e);
+                    }
+                }, 2, TimeUnit.SECONDS);
+
             } else if ("app.uninstall".equalsIgnoreCase(type)) {
                 String userId = jsonObject.getString("userId");
                 _dbManager.deleteUser(new User(userId, ""));
