@@ -9,13 +9,9 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import spark.ModelAndView;
-import spark.Request;
-import spark.Response;
-import spark.TemplateViewRoute;
 import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.SQLException;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -223,7 +219,7 @@ public class Runner
             String email = request.queryParams("email");
             String preview = request.queryParams("flockWidgetType");
             if (preview.equalsIgnoreCase("inline")) {
-                return new ModelAndView(getPreviewMap(email, request.queryParams("flockEvent")), "interviewer-preview.html");
+                return new ModelAndView(getPreviewMap(email), "interviewer-preview.html");
             } else {
                 return new ModelAndView(getMap(email), "interviewer-view.html");
             }
@@ -236,16 +232,16 @@ public class Runner
                 new MustacheTemplateEngine());
     }
 
-    private static Map<String, String> getPreviewMap(String email, String flockEvent) throws SQLException
+    private static Map<String, String> getPreviewMap(String email) throws SQLException
     {
-        JSONObject jsonObject = new JSONObject(flockEvent);
-        String userId = jsonObject.getString("userId");
         Candidate candidate = _dbManager.getCandidateByEmail(email);
-        List<Round> candidateRounds = _dbManager.getCandidateRounds(email, userId);
+        List<Round> candidateRounds = _dbManager.getCandidateRounds(email);
+        candidateRounds.sort((o1, o2) -> Integer.compare(o1.getSequence(), o2.getSequence()));
 
         if (candidateRounds.size() > 0) {
 
-            Round round = candidateRounds.get(0);
+            Round round = candidateRounds.get(candidateRounds.size() - 1);
+
             Question question = _dbManager.getQuestionById(round.getQuestionID());
             Map<String, String> map = new HashMap<>();
             map.put("candidateName", candidate.getName());
