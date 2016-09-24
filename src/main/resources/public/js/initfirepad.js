@@ -29,15 +29,17 @@ function initializeFirebase() {
 function getInterviewPadUrl() {
     initializeFirebase();
     var ref = getInterviewPadReference();
-    return baseUrl + "interviewer-view#" + ref.key;
+    var padUrl = baseUrl + "interviewer-view?padKey=" + ref.key;
+    console.log("padUrl: " + padUrl)
+    return padUrl;
 }
 
 // Helper to get hash from end of interview URL or generate a random one.
 function getInterviewPadReference() {
     var ref = firebase.database().ref();
-    var hash = window.location.hash.replace(/#/g, '');
-    if (hash) {
-        ref = ref.child(hash);
+    var padKey = getQueryVariable("padKey");
+    if (padKey) {
+        ref = ref.child(padKey);
     } else {
         ref = ref.push();
     }
