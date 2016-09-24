@@ -126,10 +126,10 @@ public class Runner
                 JSONObject roundJsonObject = new JSONObject();
                 roundJsonObject.put("interviewer_id", round.getInterviewerID());
                 roundJsonObject.put("sequence", round.getSequence());
-                roundJsonObject.put("verdict", round.getVerdict());
-                roundJsonObject.put("comments", round.getComments());
+                roundJsonObject.put("verdict", round.getVerdict() != null ? round.getVerdict() : "");
+                roundJsonObject.put("comments", round.getComments() != null ? round.getComments() : "");
                 roundJsonObject.put("collab_link", round.getCollabLink());
-                roundJsonObject.put("rating", round.getRating());
+                roundJsonObject.put("rating", round.getRating() != null ? round.getRating() : "");
                 roundJsonObject.put("scheduled_time", round.getScheduledTime());
                 Question question = _dbManager.getQuestionById(round.getQuestionID());
                 JSONObject ques = new JSONObject();
