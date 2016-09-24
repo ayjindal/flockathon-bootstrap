@@ -1,6 +1,7 @@
 package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
+import co.flock.bootstrap.database.Question.LEVEL;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -72,6 +73,8 @@ public class Runner
         get("/questions", (req, res) -> {
 
             String roleString = req.queryParams("role");
+            String sequenceNo = req.queryParams("sequence");
+
             ROLE role = null;
             if (roleString != null) {
                 role = roleString.equalsIgnoreCase("platform") ? ROLE.PLATFORM : ROLE.APPLICATION;
@@ -80,6 +83,9 @@ public class Runner
             String groupId = req.queryParams("groupId");
 
             List<Question> questionsList = _dbManager.getQuestions(role);
+            if (sequenceNo != null && role != null) {
+                questionsList = filterQuestionsBasedOnSequence(role, sequenceNo, questionsList);
+            }
 
             JSONArray questions = new JSONArray();
 
@@ -100,6 +106,27 @@ public class Runner
 
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
+    }
+
+    private static List<Question> filterQuestionsBasedOnSequence(ROLE role, String sequenceNo, List<Question> questionsList)
+    {
+        int seqNo = Integer.parseInt(sequenceNo);
+        LEVEL level;
+        if (role == ROLE.PLATFORM) {
+            level = (seqNo == 1) ? LEVEL.MEDIUM : LEVEL.HARD;
+        } else {
+            level = (seqNo == 1) ? LEVEL.EASY : LEVEL.MEDIUM;
+        }
+
+        List<Question> filteredQuestions = new ArrayList<>(questionsList.size());
+
+        for (Question question : questionsList) {
+            if (question.getLevel().equals(level)) {
+                filteredQuestions.add(question);
+            }
+        }
+
+        return filteredQuestions;
     }
 
     private static DbConfig getDbConfig()
