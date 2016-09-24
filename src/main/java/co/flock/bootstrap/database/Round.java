@@ -8,10 +8,13 @@ import com.j256.ormlite.table.DatabaseTable;
 
 public class Round
 {
-    @DatabaseField(columnName = DbConstants.Fields.EMAIL, canBeNull = false)
+    @DatabaseField(columnName = DbConstants.Fields.ROUND_ID, canBeNull = false, generatedId = true)
+    private int _id;
+
+    @DatabaseField(columnName = DbConstants.Fields.EMAIL, canBeNull = false, uniqueCombo = true)
     private String _candidateEmail;
 
-    @DatabaseField(columnName = DbConstants.Fields.INTERVIEWER_ID, canBeNull = false)
+    @DatabaseField(columnName = DbConstants.Fields.INTERVIEWER_ID, canBeNull = false, uniqueCombo = true)
     private String _interviewerID;
 
     @DatabaseField(columnName = DbConstants.Fields.SEQUENCE, canBeNull = false)
@@ -48,6 +51,11 @@ public class Round
         _collabLink = collabLink;
         _questionID = questionID;
         _scheduledTime = scheduledTime;
+    }
+
+    public int getId()
+    {
+        return _id;
     }
 
     public String getCandidateEmail()
@@ -114,7 +122,8 @@ public class Round
     public String toString()
     {
         return "Round{" +
-                "_candidateEmail='" + _candidateEmail + '\'' +
+                "_id=" + _id +
+                ", _candidateEmail='" + _candidateEmail + '\'' +
                 ", _interviewerID='" + _interviewerID + '\'' +
                 ", _sequence=" + _sequence +
                 ", _verdict=" + _verdict +

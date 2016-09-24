@@ -31,5 +31,6 @@ public class DbConstants
         public static final String TEXT = "text";
         public static final String LEVEL = "level";
         public static final String TITLE = "title";
+        public static final String ROUND_ID = "round_id";
     }
 }
