@@ -15,6 +15,9 @@ public class Question
     @DatabaseField(columnName = DbConstants.Fields.GROUP_ID)
     private String _groupID;
 
+    @DatabaseField(columnName = DbConstants.Fields.TITLE, canBeNull = false)
+    private String _title;
+
     @DatabaseField(columnName = DbConstants.Fields.TEXT, canBeNull = false)
     private String _text;
 
@@ -24,6 +27,17 @@ public class Question
     @DatabaseField(columnName = DbConstants.Fields.LEVEL, dataType = DataType.ENUM_INTEGER, canBeNull = false)
     private LEVEL _level;
 
+    public Question(String title, String text, ROLE role, LEVEL level)
+    {
+        _title = title;
+        _text = text;
+        _role = role;
+        _level = level;
+    }
+
+    public Question()
+    {
+    }
 
     public int getId()
     {
@@ -50,6 +64,11 @@ public class Question
         return _level;
     }
 
+    public String getTitle()
+    {
+        return _title;
+    }
+
     public enum LEVEL
     {
         EASY, MEDIUM, HARD
@@ -59,8 +78,9 @@ public class Question
     public String toString()
     {
         return "Question{" +
-                "_id='" + _id + '\'' +
+                "_id=" + _id +
                 ", _groupID='" + _groupID + '\'' +
+                ", _title='" + _title + '\'' +
                 ", _text='" + _text + '\'' +
                 ", _role=" + _role +
                 ", _level=" + _level +

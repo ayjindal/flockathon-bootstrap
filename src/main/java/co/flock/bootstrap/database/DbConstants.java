@@ -30,5 +30,6 @@ public class DbConstants
         public static final String GROUP_ID = "group_id";
         public static final String TEXT = "text";
         public static final String LEVEL = "level";
+        public static final String TITLE = "title";
     }
 }

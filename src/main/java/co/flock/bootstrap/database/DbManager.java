@@ -78,6 +78,7 @@ public class DbManager
         TableUtils.createTableIfNotExists(connectionSource, Candidate.class);
         TableUtils.createTableIfNotExists(connectionSource, Round.class);
         TableUtils.createTableIfNotExists(connectionSource, Question.class);
+        // TODO : increase varchar length of question's text field
         connectionSource.setMaxConnectionAgeMillis(Long.MAX_VALUE);
         _userDao = DaoManager.createDao(connectionSource, User.class);
         _candidateDao = DaoManager.createDao(connectionSource, Candidate.class);
