@@ -197,7 +197,7 @@ public class Runner
             return "User doesnt exist";
         });
 
-        get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
+        get("/interviewer-view", (req, res) -> new ModelAndView(getMap(req.queryParams("email")), "interviewer-view.html"),
                 new MustacheTemplateEngine());
 
         get("/candidate-view", (req, res) -> new ModelAndView(map, "candidate-view.html"),
@@ -205,6 +205,17 @@ public class Runner
 
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
+    }
+
+    private static Map<String, Object> getMap(String email) throws SQLException
+    {
+        Candidate candidate = _dbManager.getCandidateByEmail(email);
+        List<Round> candidateRounds = _dbManager.getCandidateRounds(email);
+        Map<String, Object> map = new HashMap<>();
+        map.put("candidate", candidate);
+        map.put("rounds", candidateRounds);
+
+        return map;
     }
 
     private static List<Question> filterQuestionsBasedOnSequence(ROLE role, String sequenceNo, List<Question> questionsList)
