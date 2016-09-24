@@ -104,6 +104,9 @@ public class Runner
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
                 new MustacheTemplateEngine());
 
+        get("/candidate-view", (req, res) -> new ModelAndView(map, "candidate-view.html"),
+                new MustacheTemplateEngine());
+
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
     }
