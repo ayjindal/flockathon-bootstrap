@@ -221,8 +221,8 @@ public class Runner
 
         get("/interviewer-view", (request, response) -> {
             String email = request.queryParams("email");
-            String preview = request.queryParams("preview");
-            if (preview != null) {
+            String preview = request.queryParams("flockWidgetType");
+            if (preview.equalsIgnoreCase("inline")) {
                 return new ModelAndView(getPreviewMap(email, request.queryParams("flockEvent")), "interviewer-preview.html");
             } else {
                 return new ModelAndView(getMap(email), "interviewer-view.html");
