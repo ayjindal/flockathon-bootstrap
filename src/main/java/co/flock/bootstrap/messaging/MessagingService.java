@@ -21,8 +21,10 @@ public class MessagingService
     public void sendCreationMessage(Candidate candidate, Round round, User user, User interviewer)
     {
         _logger.debug("sendCreationMessage candidate: " + candidate + "round: " + round);
-        Message message = new Message(candidate.getGroupId(), "@" + getTrimmedName(interviewer.getName()) + " Please help with this interview");
-        message.setFlockml("<flockml><user userId=\"" + round.getInterviewerID() + "\">@" + getTrimmedName(interviewer.getName()) + "</user> Please help with this interview</flockml>");
+        Message message = new Message(candidate.getGroupId(), "@" +
+                getTrimmedName(interviewer.getName()) + " Please help with this interview");
+        message.setFlockml("<flockml><user userId=\"" + round.getInterviewerID() + "\">@" +
+                getTrimmedName(interviewer.getName()) + "</user> Please help with this interview</flockml>");
         WidgetView widgetView = new WidgetView();
         String widgetUrl = round.getCollabLink() + "&email=" + candidate.getEmail();
         widgetView.setSrc(widgetUrl);
@@ -45,6 +47,16 @@ public class MessagingService
         String messageJson = new Gson().toJson(message);
         _logger.debug("messageJson: " + messageJson);
         sendMessage(user.getToken(), message);
+    }
+
+    public void sendRoundEndedMessage(Candidate candidate, User interviewer, String verdict)
+    {
+        _logger.debug("sendRoundEndedMessage candidate: " + candidate + " interviewer: " + interviewer);
+        Message message = new Message(candidate.getGroupId(),
+                "Interview ended for " + candidate.getName() +" Verdict: " + verdict);
+        String messageJson = new Gson().toJson(message);
+        _logger.debug("messageJson: " + messageJson);
+        sendMessage(interviewer.getToken(), message);
     }
 
     public static String getTrimmedName(String senderName)
