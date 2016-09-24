@@ -51,6 +51,7 @@ public class DbManager
         TableUtils.createTableIfNotExists(connectionSource, User.class);
         TableUtils.createTableIfNotExists(connectionSource, Candidate.class);
         connectionSource.setMaxConnectionAgeMillis(Long.MAX_VALUE);
+        _userDao = DaoManager.createDao(connectionSource, User.class);
         _candidateDao = DaoManager.createDao(connectionSource, Candidate.class);
     }
 }
