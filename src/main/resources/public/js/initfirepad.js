@@ -20,6 +20,11 @@ function initializeFirepad() {
     var firepad = Firepad.fromACE(firepadRef, editor);
 }
 
+function getInterviewPadUrl() {
+    var ref = getInterviewPadReference();
+    return baseUrl + "interviewer-view#" + ref.key;
+}
+
 // Helper to get hash from end of interview URL or generate a random one.
 function getInterviewPadReference() {
     var ref = firebase.database().ref();
