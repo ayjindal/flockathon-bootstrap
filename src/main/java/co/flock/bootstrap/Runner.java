@@ -118,10 +118,12 @@ public class Runner
             String verdict = jsonObject.getString("verdict");
             Float ratingFloat = Float.parseFloat(rating);
             Round.VERDICT v = verdict.equalsIgnoreCase("pass") ? Round.VERDICT.PASS : Round.VERDICT.REJECT;
+            Round round = _dbManager.getRound(email, interviewerId);
             _dbManager.updateRound(email, interviewerId, comments, ratingFloat, v);
             Candidate candidate = _dbManager.getCandidateByEmail(email);
             User user = _dbManager.getUserById(interviewerId);
-            _messagingService.sendRoundEndedMessage(candidate, user, verdict);
+            User nextInterviewer = getNextInterviewer(candidate, user, round);
+            _messagingService.sendRoundEndedMessage(candidate, user, nextInterviewer, round);
             _logger.debug("Done updating the round");
             return "";
         });
@@ -246,6 +248,29 @@ public class Runner
 
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
+    }
+
+    private static User getNextInterviewer(Candidate candidate, User user, Round round)
+    {
+        _logger.debug("getNextInterviewer candidate: " + candidate + " round: " + round);
+        FlockApiClient flockApiClient = new FlockApiClient(user.getToken());
+        PublicProfile[] groupMembers = new PublicProfile[0];
+        try {
+            groupMembers = flockApiClient.getGroupMembers(candidate.getGroupId());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        for (PublicProfile publicProfile : groupMembers) {
+            if(!publicProfile.getId().equalsIgnoreCase(round.getInterviewerID())) {
+                _logger.debug("Next interviewer: " + publicProfile.getId());
+                try {
+                    return _dbManager.getUserById(publicProfile.getId());
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return null;
     }
 
     private static void scheduleReminderIfNeeded(Long scheduledTime, User creator, User interviewer)

@@ -112,6 +112,23 @@ public class DbManager
         return _roundDao.query(preparedQuery);
     }
 
+    public Round getRound(String email, String interviewerId) throws SQLException
+    {
+        QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
+        Where<Round, String> where = queryBuilder.where();
+        where.eq(DbConstants.Fields.INTERVIEWER_ID, interviewerId);
+        where.and();
+        where.eq(DbConstants.Fields.EMAIL, email);
+        PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
+        List<Round> rounds = _roundDao.query(preparedQuery);
+
+        if (rounds.size() > 0) {
+            Round round = rounds.get(0);
+            return round;
+        }
+        return null;
+    }
+
     public void updateRound(String email, String interviewerId, String comments, Float rating, Round.VERDICT verdict) throws SQLException
     {
         QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();

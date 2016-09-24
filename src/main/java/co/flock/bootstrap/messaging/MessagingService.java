@@ -49,11 +49,12 @@ public class MessagingService
         sendMessage(user.getToken(), message);
     }
 
-    public void sendRoundEndedMessage(Candidate candidate, User interviewer, String verdict)
+    public void sendRoundEndedMessage(Candidate candidate, User interviewer, User nextInterviewer, Round prevRound)
     {
-        _logger.debug("sendRoundEndedMessage candidate: " + candidate + " interviewer: " + interviewer);
-        sendMessageToCreator(candidate, verdict);
-        sendMessageToInterviewer(candidate, interviewer, verdict);
+        _logger.debug("sendRoundEndedMessage candidate: " +
+                candidate + " interviewer: " + interviewer + " next: " + nextInterviewer);
+        sendMessageToCreator(candidate, nextInterviewer, prevRound);
+        sendMessageToInterviewer(candidate, interviewer, prevRound.getVerdict().toString());
     }
 
     private void sendMessageToInterviewer(Candidate candidate, User interviewer, String verdict)
@@ -65,10 +66,27 @@ public class MessagingService
         sendMessage(BOT_TOKEN, message);
     }
 
-    private void sendMessageToCreator(Candidate candidate, String verdict)
+    private void sendMessageToCreator(Candidate candidate, User interviewer, Round round)
     {
         Message message = new Message(candidate.getCreatorId(),
-                "Interview ended for " + candidate.getName() +" Verdict: " + verdict);
+                "Interview ended for " + candidate.getName());
+        WidgetView widgetView = new WidgetView();
+        String widgetUrl = round.getCollabLink() + "&email=" + candidate.getEmail();
+        widgetView.setSrc(widgetUrl);
+        Attachment attachment = new Attachment();
+
+        Button[] buttons = new Button[1];
+        buttons[0] = new Button();
+        buttons[0].setName("View");
+        Action action = new Action();
+        action.addOpenWidget(widgetUrl, "modal", "modal");
+        buttons[0].setAction(action);
+        attachment.setButtons(buttons);
+
+        View view = new View();
+        view.setWidget(widgetView);
+        attachment.setViews(view);
+        message.setAttachments(new Attachment[]{attachment});
         String messageJson = new Gson().toJson(message);
         _logger.debug("messageJson: " + messageJson);
         sendMessage(BOT_TOKEN, message);
