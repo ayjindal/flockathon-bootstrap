@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/pure-min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://apps-static.flock.co/js-sdk/0.1.0/flock.js"></script>
+<body>
+<div id="pending">
+        <!--{{#roundsTaken}}-->
+    <div class="col-lg-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                {{candidateEmail}}
+            </div>
+            <div class="panel-body">
+                <p>
+                    Collab Link: {{collabLink}} <br/>
+                    Comments: {{comments}} <br/>
+                    Rating: {{rating}} <br/>
+                </p>
+            </div>
+            <div class="panel-footer">
+                Verdict: {{verdict}}
+            </div>
+        </div>
+    </div>
+        <!--{{/roundsTaken}}-->
+</div>
+</body>
+</html>
