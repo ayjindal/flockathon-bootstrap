@@ -155,4 +155,11 @@ public class DbManager
         return _roundDao.query(preparedQuery);
     }
 
+    public List<Candidate> getCandidatesForGroup(String groupId) throws SQLException
+    {
+        QueryBuilder<Candidate, String> queryBuilder = _candidateDao.queryBuilder();
+        queryBuilder.where().eq(DbConstants.Fields.GROUP_ID, groupId);
+        PreparedQuery<Candidate> preparedQuery = queryBuilder.prepare();
+        return _candidateDao.query(preparedQuery);
+    }
 }

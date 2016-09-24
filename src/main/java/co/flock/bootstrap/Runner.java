@@ -89,8 +89,10 @@ public class Runner
             String questionId = round.getString("question_id");
             Long scheduledTime = round.getLong("scheduled_time");
             String collabLink = round.getString("collab_link");
-
-            Candidate candidateObj = new Candidate(email, name, creatorId, cvLink, role, groupId);
+            User user = _dbManager.getUserById(creatorId);
+            String creatorName = user.getName();
+            _logger.debug(creatorName);
+            Candidate candidateObj = new Candidate(email, name, creatorId, creatorName, cvLink, role, groupId);
             _dbManager.insertOrUpdateCandidate(candidateObj);
             Round roundObj = new Round(email, interviewerId, 1, collabLink, questionId, new Date(scheduledTime));
             _dbManager.insertOrUpdateRound(roundObj);
@@ -194,6 +196,9 @@ public class Runner
 
         get("/launcher-button-view", (req, res) -> new ModelAndView(getLauncherButtonView(req.queryParams("flockEvent")),
                 "launcher-view.html"), new MustacheTemplateEngine());
+
+        get("/chat-tab-button-view", (req, res) -> new ModelAndView(getChatTabButtonView(req.queryParams("flockEvent")),
+                "chat-tab-view.html"), new MustacheTemplateEngine());
 
         get("/interviewers", (req, res) -> {
             String groupId = req.queryParams("groupId");
@@ -317,6 +322,16 @@ public class Runner
         Map<String, List<Round>> s = new HashMap<>();
         s.put("roundsTaken", roundsTaken);
         _logger.debug("roundsTaken:" + roundsTaken);
+        return s;
+    }
+
+    private static Map<String, List<Candidate>> getChatTabButtonView(String queryString) throws SQLException
+    {
+        JSONObject jsonObject = new JSONObject(queryString);
+        String groupId = jsonObject.getString("chat");
+        List<Candidate> candidates = _dbManager.getCandidatesForGroup(groupId);
+        Map<String, List<Candidate>> s = new HashMap<>();
+        s.put("candidates", candidates);
         return s;
     }
 }
