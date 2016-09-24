@@ -1,8 +1,6 @@
 package co.flock.bootstrap;
 
-import co.flock.bootstrap.database.DbConfig;
-import co.flock.bootstrap.database.DbManager;
-import co.flock.bootstrap.database.User;
+import co.flock.bootstrap.database.*;
 import org.apache.log4j.Logger;
 import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
@@ -12,6 +10,7 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import static co.flock.bootstrap.database.Candidate.*;
 import static spark.Spark.*;
 
 public class Runner
@@ -44,6 +43,29 @@ public class Runner
                 _dbManager.deleteUser(new User(userId, ""));
                 _logger.debug("User deleted : " + userId);
             }
+
+            return "";
+        });
+
+        post("/create", (req, res) -> {
+
+            _logger.debug("Received request with body: " + req.body());
+
+            JSONObject jsonObject = new JSONObject(req.body());
+            JSONObject candidate = jsonObject.getJSONObject("candidate");
+            JSONObject round = jsonObject.getJSONObject("round");
+            String name = candidate.getString("name");
+            String email = candidate.getString("email");
+            String cvLink = candidate.getString("cv_link");
+            ROLE role = candidate.getString("role").equalsIgnoreCase("platform") ? ROLE.PLATFORM : ROLE.APPLICATION;
+            String creatorId = candidate.getString("creator_id");
+            String interviewerId = round.getString("interviewer_id");
+            String questionId = round.getString("question_id");
+            String scheduledTime = round.getString("scheduled_time");
+            String collabLink = round.getString("collab_link");
+
+            _dbManager.insertOrUpdateCandidate(new Candidate(email, name, creatorId, cvLink, role));
+            _dbManager.insertOrUpdateRound(new Round(email, interviewerId, 1, collabLink, questionId, scheduledTime));
 
             return "";
         });

@@ -13,6 +13,7 @@ public class DbManager
 {
     private Dao<User, String> _userDao;
     private Dao<Candidate, String> _candidateDao;
+    private Dao<Round, String> _roundDao;
 
     public DbManager(DbConfig dbConfig) throws SQLException
     {
@@ -27,6 +28,11 @@ public class DbManager
     public CreateOrUpdateStatus insertOrUpdateUser(User user) throws SQLException
     {
         return _userDao.createOrUpdate(user);
+    }
+
+    public CreateOrUpdateStatus insertOrUpdateRound(Round round) throws SQLException
+    {
+        return _roundDao.createOrUpdate(round);
     }
 
     public User getUserById(String userID) throws SQLException
@@ -53,5 +59,6 @@ public class DbManager
         connectionSource.setMaxConnectionAgeMillis(Long.MAX_VALUE);
         _userDao = DaoManager.createDao(connectionSource, User.class);
         _candidateDao = DaoManager.createDao(connectionSource, Candidate.class);
+        _roundDao = DaoManager.createDao(connectionSource, Round.class);
     }
 }

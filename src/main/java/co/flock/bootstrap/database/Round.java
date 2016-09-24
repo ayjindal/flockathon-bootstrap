@@ -9,12 +9,12 @@ import com.j256.ormlite.table.DatabaseTable;
 public class Round
 {
     @DatabaseField(columnName = DbConstants.Fields.EMAIL, canBeNull = false)
-    private String _email;
+    private String _candidateEmail;
 
     @DatabaseField(columnName = DbConstants.Fields.INTERVIEWER_ID, canBeNull = false)
     private String _interviewerID;
 
-    @DatabaseField(columnName = DbConstants.Fields.SEQUENCE, defaultValue = "1")
+    @DatabaseField(columnName = DbConstants.Fields.SEQUENCE, canBeNull = false)
     private int _sequence;
 
     @DatabaseField(columnName = DbConstants.Fields.VERDICT, dataType = DataType.ENUM_INTEGER)
@@ -40,9 +40,19 @@ public class Round
     {
     }
 
-    public String getEmail()
+    public Round(String candidateEmail, String interviewerID, int sequence, String collabLink, String questionID, String scheduledTime)
     {
-        return _email;
+        _candidateEmail = candidateEmail;
+        _interviewerID = interviewerID;
+        _sequence = sequence;
+        _collabLink = collabLink;
+        _questionID = questionID;
+        _scheduledTime = scheduledTime;
+    }
+
+    public String getCandidateEmail()
+    {
+        return _candidateEmail;
     }
 
     public String getInterviewerID()
@@ -85,11 +95,26 @@ public class Round
         return _scheduledTime;
     }
 
+    public void setVerdict(VERDICT verdict)
+    {
+        _verdict = verdict;
+    }
+
+    public void setComments(String comments)
+    {
+        _comments = comments;
+    }
+
+    public void setRating(float rating)
+    {
+        _rating = rating;
+    }
+
     @Override
     public String toString()
     {
         return "Round{" +
-                "_email='" + _email + '\'' +
+                "_candidateEmail='" + _candidateEmail + '\'' +
                 ", _interviewerID='" + _interviewerID + '\'' +
                 ", _sequence=" + _sequence +
                 ", _verdict=" + _verdict +

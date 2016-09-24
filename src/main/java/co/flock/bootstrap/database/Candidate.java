@@ -27,6 +27,15 @@ public class Candidate
     {
     }
 
+    public Candidate(String email, String name, String creatorId, String cvLink, ROLE role)
+    {
+        _email = email;
+        _name = name;
+        _creatorId = creatorId;
+        _cvLink = cvLink;
+        _role = role;
+    }
+
     public String getEmail()
     {
         return _email;
