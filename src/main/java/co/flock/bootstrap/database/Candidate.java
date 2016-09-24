@@ -22,18 +22,21 @@ public class Candidate
     @DatabaseField(columnName = DbConstants.Fields.ROLE, dataType = DataType.ENUM_INTEGER, canBeNull = false)
     private ROLE _role;
 
+    @DatabaseField(columnName = DbConstants.Fields.GROUP_ID, canBeNull = false)
+    private String _groupId;
 
     public Candidate()
     {
     }
 
-    public Candidate(String email, String name, String creatorId, String cvLink, ROLE role)
+    public Candidate(String email, String name, String creatorId, String cvLink, ROLE role, String groupId)
     {
         _email = email;
         _name = name;
         _creatorId = creatorId;
         _cvLink = cvLink;
         _role = role;
+        _groupId = groupId;
     }
 
     public String getEmail()
@@ -61,6 +64,11 @@ public class Candidate
         return _role;
     }
 
+    public String getGroupId()
+    {
+        return _groupId;
+    }
+
     public enum ROLE
     {
         PLATFORM, APPLICATION;
@@ -74,7 +82,8 @@ public class Candidate
                 ", _name='" + _name + '\'' +
                 ", _creatorId='" + _creatorId + '\'' +
                 ", _cvLink='" + _cvLink + '\'' +
-                ", _role='" + _role + '\'' +
+                ", _role=" + _role +
+                ", _groupId='" + _groupId + '\'' +
                 '}';
     }
 }

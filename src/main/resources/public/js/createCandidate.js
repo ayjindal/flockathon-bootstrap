@@ -68,6 +68,7 @@ $(document).ready(function()
                   "cv_link": cvLink,
                   "role": role,
                   "creator_id": event.userId,
+                  "group_id": groupId
               },
               "round": {
                   "collab_link": "http://testCollabLink",
