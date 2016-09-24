@@ -2,6 +2,9 @@ package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
 import co.flock.bootstrap.database.Question.LEVEL;
+import co.flock.bootstrap.database.User;
+import co.flock.www.FlockApiClient;
+import co.flock.www.model.*;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -10,14 +13,19 @@ import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.SQLException;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
-import static co.flock.bootstrap.database.Candidate.*;
+import static co.flock.bootstrap.database.Candidate.ROLE;
 import static spark.Spark.*;
 
 public class Runner
 {
     private static final Logger _logger = Logger.getLogger(Runner.class);
     private static DbManager _dbManager;
+    private static final ScheduledExecutorService _executorService = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws Exception
     {
@@ -37,8 +45,22 @@ public class Runner
             if ("app.install".equals(type)) {
                 String userId = jsonObject.getString("userId");
                 String userToken = jsonObject.getString("userToken");
-                _dbManager.insertOrUpdateUser(new User(userId, userToken));
+                User user = new User(userId, userToken);
+                _dbManager.insertOrUpdateUser(user);
                 _logger.debug("User inserted : " + userId + "  " + userToken);
+
+                _executorService.schedule((Runnable) () -> {
+                    try {
+                        FlockApiClient flockApiClient = new FlockApiClient(userToken);
+                        co.flock.www.model.User userInfo = flockApiClient.getUserInfo();
+                        user.setName(userInfo.getFirstName() + ' ' + userInfo.getLastName());
+                        _dbManager.insertOrUpdateUser(user);
+
+                    } catch (Exception e) {
+                        _logger.debug("Failed : ", e);
+                    }
+                }, 2, TimeUnit.SECONDS);
+
             } else if ("app.uninstall".equalsIgnoreCase(type)) {
                 String userId = jsonObject.getString("userId");
                 _dbManager.deleteUser(new User(userId, ""));
@@ -111,10 +133,12 @@ public class Runner
             JSONObject jsonObject = new JSONObject();
 
             JSONObject candidateJsonObject = new JSONObject();
-            candidateJsonObject.put("name", candidate.getName());
-            candidateJsonObject.put("email", candidate.getEmail());
-            candidateJsonObject.put("cv_link", candidate.getCvLink());
-            candidateJsonObject.put("role", candidate.getRole());
+            if (candidate != null) {
+                candidateJsonObject.put("name", candidate.getName());
+                candidateJsonObject.put("email", candidate.getEmail());
+                candidateJsonObject.put("cv_link", candidate.getCvLink());
+                candidateJsonObject.put("role", candidate.getRole());
+            }
             jsonObject.put("candidate", candidateJsonObject);
 
             JSONArray rounds = new JSONArray();
@@ -123,10 +147,10 @@ public class Runner
                 JSONObject roundJsonObject = new JSONObject();
                 roundJsonObject.put("interviewer_id", round.getInterviewerID());
                 roundJsonObject.put("sequence", round.getSequence());
-                roundJsonObject.put("verdict", round.getVerdict());
-                roundJsonObject.put("comments", round.getComments());
+                roundJsonObject.put("verdict", round.getVerdict() != null ? round.getVerdict() : "");
+                roundJsonObject.put("comments", round.getComments() != null ? round.getComments() : "");
                 roundJsonObject.put("collab_link", round.getCollabLink());
-                roundJsonObject.put("rating", round.getRating());
+                roundJsonObject.put("rating", round.getRating() != null ? round.getRating() : "");
                 roundJsonObject.put("scheduled_time", round.getScheduledTime());
                 Question question = _dbManager.getQuestionById(round.getQuestionID());
                 JSONObject ques = new JSONObject();
@@ -146,6 +170,29 @@ public class Runner
 
         get("/launcher-button-view", (req, res) -> new ModelAndView(getLauncherButtonView(req.queryParams("flockEvent")),
                 "launcher-view.mustache"), new MustacheTemplateEngine());
+
+        get("/interviewers", (req, res) -> {
+            String groupId = req.queryParams("groupId");
+            String userId = req.queryParams("userId");
+            User user = _dbManager.getUserById(userId);
+
+            if (user != null) {
+                FlockApiClient flockApiClient = new FlockApiClient(user.getToken());
+                PublicProfile[] groupMembers = flockApiClient.getGroupMembers(groupId);
+
+                JSONArray jsonArray = new JSONArray();
+                for (PublicProfile publicProfile : groupMembers) {
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("userId", publicProfile.getId());
+                    jsonObject.put("name", publicProfile.getFirstName() + ' ' + publicProfile.getLastName());
+                    jsonArray.put(jsonObject);
+                }
+
+                return jsonArray;
+            }
+
+            return "User doesnt exist";
+        });
 
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
                 new MustacheTemplateEngine());

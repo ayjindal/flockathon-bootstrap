@@ -32,7 +32,7 @@ public class Round
     private String _collabLink;
 
     @DatabaseField(columnName = DbConstants.Fields.RATING)
-    private float _rating;
+    private Float _rating;
 
     @DatabaseField(columnName = DbConstants.Fields.QUESTION_ID, canBeNull = false)
     private String _questionID;
@@ -90,7 +90,7 @@ public class Round
         return _collabLink;
     }
 
-    public float getRating()
+    public Float getRating()
     {
         return _rating;
     }

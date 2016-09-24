@@ -12,6 +12,9 @@ public class User
     @DatabaseField(columnName = DbConstants.Fields.TOKEN, canBeNull = false)
     private String _userToken;
 
+    @DatabaseField(columnName = DbConstants.Fields.NAME)
+    private String _name;
+
     public User()
     {
     }
@@ -30,6 +33,16 @@ public class User
     public String getToken()
     {
         return _userToken;
+    }
+
+    public String getName()
+    {
+        return _name;
+    }
+
+    public void setName(String name)
+    {
+        _name = name;
     }
 
     @Override
