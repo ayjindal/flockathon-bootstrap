@@ -2,11 +2,13 @@ package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
 import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import spark.ModelAndView;
 import spark.template.mustache.MustacheTemplateEngine;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -80,7 +82,20 @@ public class Runner
 
             String groupId = req.queryParams("groupId");
 
-            return _dbManager.getQuestions(role);
+            List<Question> questionsList = _dbManager.getQuestions(role);
+
+            JSONArray questions = new JSONArray();
+
+            for (Question question : questionsList) {
+                JSONObject ques = new JSONObject();
+                ques.put("id", question.getId());
+                ques.put("title", question.getTitle());
+                ques.put("level", question.getLevel());
+                ques.put("text", question.getText());
+                questions.put(ques);
+            }
+
+            return questions.toString();
         });
 
         get("/interviewer-view", (req, res) -> new ModelAndView(map, "interviewer-view.html"),
