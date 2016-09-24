@@ -61,6 +61,8 @@ $(document).ready(function()
 
      function createCandidate() {
           time = (new Date).getTime();
+          collabLink = getInterviewPadUrl();
+          console.log("collabLink: " + collabLink);
           payload =
           {
               "candidate": {
@@ -72,7 +74,7 @@ $(document).ready(function()
                   "group_id": groupId
               },
               "round": {
-                  "collab_link": "http://testCollabLink",
+                  "collab_link": collabLink,
                   "interviewer_id": interviewerId,
                   "question_id": question,
                   "scheduled_time": JSON.stringify(time)
