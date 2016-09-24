@@ -2,6 +2,7 @@ package co.flock.bootstrap;
 
 import co.flock.bootstrap.database.*;
 import co.flock.bootstrap.database.Question.LEVEL;
+import co.flock.bootstrap.mail.MailServer;
 import co.flock.bootstrap.messaging.MessagingService;
 import co.flock.www.FlockApiClient;
 import co.flock.www.model.PublicProfile;
@@ -98,6 +99,8 @@ public class Runner
             User creator = _dbManager.getUserById(candidateObj.getCreatorId());
             User interviewer = _dbManager.getUserById(roundObj.getInterviewerID());
             _messagingService.sendCreationMessage(candidateObj, roundObj, creator, interviewer);
+            MailServer.sendEmail(candidateObj.getEmail(), roundObj.getScheduledTime(),
+                    roundObj.getCollabLink().replace("interviewer-view", "candidate-view"));
             scheduleReminderIfNeeded(scheduledTime, creator, interviewer);
             return "";
         });
