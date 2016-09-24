@@ -17,6 +17,7 @@ public class DbConstants
         public static final String EMAIL = "email";
         public static final String NAME = "name";
         public static final String CREATOR_ID = "creator_id";
+        public static final String CREATOR_NAME = "creator_name";
         public static final String CV_LINK = "cv_link";
         public static final String ROLE = "role";
         public static final String INTERVIEWER_ID = "interviewer_id";

@@ -25,15 +25,19 @@ public class Candidate
     @DatabaseField(columnName = DbConstants.Fields.GROUP_ID, canBeNull = false)
     private String _groupId;
 
+    @DatabaseField(columnName = DbConstants.Fields.CREATOR_NAME, canBeNull = false)
+    private String _creatorName;
+
     public Candidate()
     {
     }
 
-    public Candidate(String email, String name, String creatorId, String cvLink, ROLE role, String groupId)
+    public Candidate(String email, String name, String creatorId, String creatorName, String cvLink, ROLE role, String groupId)
     {
         _email = email;
         _name = name;
         _creatorId = creatorId;
+        _creatorName = creatorName;
         _cvLink = cvLink;
         _role = role;
         _groupId = groupId;
@@ -52,6 +56,11 @@ public class Candidate
     public String getCreatorId()
     {
         return _creatorId;
+    }
+
+    public String getCreatorName()
+    {
+        return _creatorName;
     }
 
     public String getCvLink()
@@ -84,6 +93,7 @@ public class Candidate
                 ", _cvLink='" + _cvLink + '\'' +
                 ", _role=" + _role +
                 ", _groupId='" + _groupId + '\'' +
+                ", _creatorName='" + _creatorName + '\'' +
                 '}';
     }
 }
