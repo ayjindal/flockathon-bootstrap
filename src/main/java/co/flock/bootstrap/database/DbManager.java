@@ -35,7 +35,17 @@ public class DbManager
 
     public CreateOrUpdateStatus insertOrUpdateRound(Round round) throws SQLException
     {
+        QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
+        queryBuilder.where().eq(DbConstants.Fields.INTERVIEWER_ID, round.getInterviewerID());
+        queryBuilder.where().eq(DbConstants.Fields.EMAIL, round.getCandidateEmail());
+        PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
+        List<Round> rounds = _roundDao.query(preparedQuery);
+
+        if (rounds.size() > 0) {
+            _roundDao.deleteById(String.valueOf(rounds.get(0).getId()));
+        }
         return _roundDao.createOrUpdate(round);
+
     }
 
     public CreateOrUpdateStatus insertOrUpdateQuestion(Question question) throws SQLException
