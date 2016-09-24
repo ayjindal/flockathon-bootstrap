@@ -1,9 +1,8 @@
 $(document).ready(function()
 {
-     var platformQuestions;
      getQuestions("platform");
      $("#submit").click(function () {
-        console.log("submit clicked")
+         console.log("submit clicked")
          name = $("#name").val();
          email = $("#email").val();
          cvLink = $("#cv_link").val();
@@ -17,25 +16,29 @@ $(document).ready(function()
          flock.close();
      });
 
+     $('#role').change(function(){
+         role = $('#role').val();
+         getQuestions(role);
+     });
+
      function getTime(dateString) {
         var parts = dateString.match(/(\d{2})\/(\d{2})\/(\d{4}) (\d{2}):(\d{2})/);
         return Date.UTC(+parts[3], parts[2]-1, +parts[1], +parts[4], +parts[5]);
      }
 
      function getQuestions(role) {
-          payload =
-          {
-               "role": role,
-               "groupId": "g:123"
-          }
-          sendAjaxRequest(baseUrl + "questions", "get", payload, function (response) {
-              questions = JSON.parse(response)
-              $.each(questions, function (i, question) {
-                  $('#question').append($('<option>', {
-                      value: question.id,
-                      text : question.title + " (" + question.level + ")"
-                  }));
-              });
+          console.log("Get questions for role: " + role)
+          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=g:123&sequence=1", "get", null, function (response) {
+            if(role == $('#role').val()) {
+                  $('#question').html('');
+                  questions = JSON.parse(response);
+                  $.each(questions, function (i, question) {
+                      $('#question').append($('<option>', {
+                          value: question.id,
+                          text : question.title + " (" + question.level + ")"
+                      }));
+                  });
+            }
           });
      }
 
