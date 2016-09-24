@@ -37,8 +37,10 @@ public class DbManager
     public CreateOrUpdateStatus insertOrUpdateRound(Round round) throws SQLException
     {
         QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
-        queryBuilder.where().eq(DbConstants.Fields.INTERVIEWER_ID, round.getInterviewerID());
-        queryBuilder.where().eq(DbConstants.Fields.EMAIL, round.getCandidateEmail());
+        Where<Round, String> where = queryBuilder.where();
+        where.eq(DbConstants.Fields.INTERVIEWER_ID, round.getInterviewerID());
+        where.and();
+        where.eq(DbConstants.Fields.EMAIL, round.getCandidateEmail());
         PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
         List<Round> rounds = _roundDao.query(preparedQuery);
 
@@ -113,8 +115,10 @@ public class DbManager
     public void updateRound(String email, String interviewerId, String comments, Float rating, Round.VERDICT verdict) throws SQLException
     {
         QueryBuilder<Round, String> queryBuilder = _roundDao.queryBuilder();
-        queryBuilder.where().eq(DbConstants.Fields.INTERVIEWER_ID, interviewerId);
-        queryBuilder.where().eq(DbConstants.Fields.EMAIL, email);
+        Where<Round, String> where = queryBuilder.where();
+        where.eq(DbConstants.Fields.INTERVIEWER_ID, interviewerId);
+        where.and();
+        where.eq(DbConstants.Fields.EMAIL, email);
         PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
         List<Round> rounds = _roundDao.query(preparedQuery);
 
