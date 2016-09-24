@@ -9,9 +9,14 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import spark.ModelAndView;
+import spark.Request;
+import spark.Response;
+import spark.TemplateViewRoute;
 import spark.template.mustache.MustacheTemplateEngine;
 
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -97,6 +102,21 @@ public class Runner
             _messagingService.sendCreationMessage(candidateObj, roundObj, creator, interviewer);
             return "";
         });
+
+        post("/update", (req, res) -> {
+            JSONObject jsonObject = new JSONObject(req.body());
+
+            String email = jsonObject.getString("email");
+            String interviewerId = jsonObject.getString("interviewer_id");
+            String comments = jsonObject.getString("comments");
+            String rating = jsonObject.getString("rating");
+            String verdict = jsonObject.getString("verdict");
+            Float ratingFloat = Float.parseFloat(rating);
+            Round.VERDICT v = verdict.equalsIgnoreCase("pass") ? Round.VERDICT.PASS : Round.VERDICT.REJECT;
+            _dbManager.updateRound(email, interviewerId, comments, ratingFloat, v);
+            return "";
+        });
+
 
         get("/questions", (req, res) -> {
 
@@ -199,14 +219,49 @@ public class Runner
             return "User doesnt exist";
         });
 
-        get("/interviewer-view", (req, res) -> new ModelAndView(getMap(req.queryParams("email")), "interviewer-view.html"),
-                new MustacheTemplateEngine());
+        get("/interviewer-view", (request, response) -> {
+            String email = request.queryParams("email");
+            String preview = request.queryParams("flockWidgetType");
+            if (preview.equalsIgnoreCase("inline")) {
+                return new ModelAndView(getPreviewMap(email, request.queryParams("flockEvent")), "interviewer-preview.html");
+            } else {
+                return new ModelAndView(getMap(email), "interviewer-view.html");
+            }
+        }, new MustacheTemplateEngine());
 
         get("/candidate-view", (req, res) -> new ModelAndView(map, "candidate-view.html"),
                 new MustacheTemplateEngine());
 
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
+    }
+
+    private static Map<String, String> getPreviewMap(String email, String flockEvent) throws SQLException
+    {
+        JSONObject jsonObject = new JSONObject(flockEvent);
+        String userId = jsonObject.getString("userId");
+        Candidate candidate = _dbManager.getCandidateByEmail(email);
+        List<Round> candidateRounds = _dbManager.getCandidateRounds(email, userId);
+
+        if (candidateRounds.size() > 0) {
+
+            Round round = candidateRounds.get(0);
+            Question question = _dbManager.getQuestionById(round.getQuestionID());
+            Map<String, String> map = new HashMap<>();
+            map.put("candidateName", candidate.getName());
+            map.put("cvLink", candidate.getCvLink());
+            map.put("sequence", String.valueOf(round.getSequence()));
+            map.put("questionTitle", question.getTitle());
+            map.put("questionLevel", question.getLevel().name());
+            map.put("collabLink", round.getCollabLink());
+            SimpleDateFormat df = new SimpleDateFormat("EEE, d MMM yyyy, hh:mm aaa");
+            map.put("time", df.format(round.getScheduledTime()));
+            map.put("email", candidate.getEmail());
+            return map;
+        }
+
+        return new HashMap<>();
+
     }
 
     private static Map<String, Object> getMap(String email) throws SQLException
