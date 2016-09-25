@@ -124,6 +124,8 @@ public class Runner
             User interviewer = _dbManager.getUserById(roundObj.getInterviewerID());
             _dbManager.insertOrUpdateRound(roundObj);
             _messagingService.sendUpdationMessage(candidate, firstRound, roundObj, creator, interviewer);
+            MailServer.sendEmail(candidate.getEmail(), roundObj.getScheduledTime(),
+                    roundObj.getCollabLink().replace("interviewer-view", "candidate-view"));
             return "";
         });
 
