@@ -12,6 +12,7 @@ $(document).ready(function()
          date = $("#datepicker").find("input").val();
          time = $("#timepicker").find("input").val();
          time = getTime(date + " " + time);
+         email = $("#email").val();
          editCandidate();
          flock.close();
      });
@@ -60,6 +61,7 @@ $(document).ready(function()
           collabLink = getInterviewPadUrl();
           payload =
           {
+              "email": email,
               "round": {
                   "collab_link": collabLink,
                   "interviewer_id": interviewerId,
