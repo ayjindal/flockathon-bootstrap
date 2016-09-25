@@ -1,16 +1,11 @@
 package co.flock.bootstrap.mail;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Properties;
-
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 public class MailServer {
 
@@ -19,14 +14,14 @@ public class MailServer {
 
     private static final String SUBJECT = "Your Interview Details";
 
-    public static int sendEmail(String emailAddress, Date dateTime, String collabeditLink) {
+    public static int sendEmail(String emailAddress, String name, Date dateTime, String collabeditLink) {
         Session session = getSendMailSession();
         try {
             Message message = new MimeMessage(session);
             message.setFrom(new InternetAddress("hyre.flockapp@gmail.com"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(emailAddress));
             message.setSubject(SUBJECT);
-            message.setText("Dear Candidate," + "\n\n" +
+            message.setText("Dear " + name + ",\n\n" +
                     "Your interview has been scheduled on " + getDate(dateTime) + " at " + getTime(dateTime) + ".\n" +
                     "You will collaborate with the interviewer here: " + collabeditLink + "\n\n" +
                     "All the best!" + "\n\n" +
@@ -68,6 +63,6 @@ public class MailServer {
     }
 
     public static void main(String args[]) {
-        sendEmail("bharatsinghvi.1988@gmail.com", new Date(), "http://collabedit.com/12sjh");
+        sendEmail("bharatsinghvi.1988@gmail.com", "Bharat Singhvi", new Date(), "http://collabedit.com/12sjh");
     }
 }
