@@ -110,11 +110,17 @@ public class MessagingService
         widgetView.setSrc(widgetUrl);
         Attachment attachment = new Attachment();
 
-        Button[] buttons = new Button[1];
+        Button[] buttons = new Button[2];
         buttons[0] = new Button();
         buttons[0].setName("View");
         Action action = new Action();
         action.addOpenWidget(widgetUrl, "modal", "modal");
+        buttons[0].setAction(action);
+
+        buttons[1] = new Button();
+        buttons[1].setName("Finish");
+        action = new Action();
+        action.addDispatchEvent();
         buttons[0].setAction(action);
         attachment.setButtons(buttons);
 

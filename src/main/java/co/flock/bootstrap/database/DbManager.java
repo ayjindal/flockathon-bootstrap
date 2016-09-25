@@ -81,11 +81,14 @@ public class DbManager
         _userDao.delete(user);
     }
 
-    public List<Question> getQuestions(Candidate.ROLE role) throws SQLException
+    public List<Question> getQuestions(Candidate.ROLE role, String groupId) throws SQLException
     {
         if (role != null) {
             QueryBuilder<Question, String> queryBuilder = _questionDao.queryBuilder();
-            queryBuilder.where().eq(DbConstants.Fields.ROLE, role);
+            Where<Question, String> where = queryBuilder.where();
+            where.eq(DbConstants.Fields.ROLE, role);
+            where.and();
+            where.eq(DbConstants.Fields.GROUP_ID, groupId);
             PreparedQuery<Question> preparedQuery = queryBuilder.prepare();
             return _questionDao.query(preparedQuery);
         } else {

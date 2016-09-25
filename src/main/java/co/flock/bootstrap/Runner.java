@@ -164,7 +164,7 @@ public class Runner
 
             String groupId = req.queryParams("groupId");
 
-            List<Question> questionsList = _dbManager.getQuestions(role);
+            List<Question> questionsList = _dbManager.getQuestions(role, groupId);
             List<Round> rounds = new ArrayList<>(1);
             if (email != null) {
                 rounds = _dbManager.getCandidateRounds(email);
