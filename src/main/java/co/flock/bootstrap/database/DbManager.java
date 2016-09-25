@@ -108,13 +108,21 @@ public class DbManager
         PreparedQuery<Round> preparedQuery = queryBuilder.prepare();
         List<Round> rounds = _roundDao.query(preparedQuery);
         if (rounds.size() > 0) {
-            for(Round round : rounds) {
-                if(round.getSequence() == 1) {
+            for (Round round : rounds) {
+                if (round.getSequence() == 1) {
                     return round;
                 }
             }
         }
         return null;
+
+    }
+    public List<Candidate> getCandidatesByGroupId(String groupId) throws SQLException
+    {
+        QueryBuilder<Candidate, String> queryBuilder = _candidateDao.queryBuilder();
+        queryBuilder.where().eq(DbConstants.Fields.GROUP_ID, groupId);
+        PreparedQuery<Candidate> preparedQuery = queryBuilder.prepare();
+        return _candidateDao.query(preparedQuery);
     }
 
     public List<Round> getCandidateRounds(String email, String interviewerId) throws SQLException

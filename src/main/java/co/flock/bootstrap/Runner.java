@@ -266,6 +266,9 @@ public class Runner
         get("/candidate-view", (req, res) -> new ModelAndView(map, "candidate-view.html"),
                 new MustacheTemplateEngine());
 
+        get("/stats", (req, res) -> new ModelAndView(getStatsMap(req.queryParams("flockEvent")), "template_stats.mustache"),
+                new MustacheTemplateEngine());
+
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
 
@@ -286,7 +289,7 @@ public class Runner
             e.printStackTrace();
         }
         for (PublicProfile publicProfile : groupMembers) {
-            if(!publicProfile.getId().equalsIgnoreCase(round.getInterviewerID())) {
+            if (!publicProfile.getId().equalsIgnoreCase(round.getInterviewerID())) {
                 _logger.debug("Next interviewer: " + publicProfile.getId());
                 try {
                     return _dbManager.getUserById(publicProfile.getId());
@@ -297,6 +300,63 @@ public class Runner
         }
         return null;
     }
+
+    private static Map<String, Object> getStatsMap(String flockEvent) throws SQLException
+    {
+        JSONObject jsonObject = new JSONObject(flockEvent);
+        String groupId = jsonObject.getString("chat");
+        String userId = jsonObject.getString("userId");
+        Map<String, Object> map = new HashMap<>();
+
+        User user = _dbManager.getUserById(userId);
+        FlockApiClient flockApiClient = new FlockApiClient(user.getToken());
+        List<Candidate> candidateList = _dbManager.getCandidatesByGroupId(groupId);
+        Integer completed = 0;
+        Integer pending = 0;
+        Map<String, Integer> userIdToScoreMap = new HashMap<>();
+
+        if (candidateList.size() > 0) {
+            for (Candidate candidate : candidateList) {
+                List<Round> candidateRounds = _dbManager.getCandidateRounds(candidate.getEmail());
+                int passVerdict = 0;
+                for (Round round : candidateRounds) {
+
+                    if (round.getVerdict() != null) {
+
+                        if (!userIdToScoreMap.containsKey(round.getInterviewerID())) {
+                            userIdToScoreMap.put(round.getInterviewerID(), 0);
+                        }
+
+                        userIdToScoreMap.put(round.getInterviewerID(), userIdToScoreMap.get(round.getInterviewerID()) + 1);
+
+                        if (round.getVerdict().equals(Round.VERDICT.PASS)) {
+                            passVerdict++;
+                        }
+                    }
+                }
+
+                if (passVerdict >= 2) {
+                    completed++;
+                } else {
+                    pending++;
+                }
+            }
+        }
+
+        List<Score> scoreList = new ArrayList<>();
+
+        for (Map.Entry<String, Integer> entry : userIdToScoreMap.entrySet()) {
+            scoreList.add(new Score(_dbManager.getUserById(entry.getKey()).getName(), entry.getValue()));
+        }
+
+
+        map.put("total", candidateList.size());
+        map.put("completed", completed);
+        map.put("pending", pending);
+        map.put("scores", scoreList);
+        return map;
+    }
+
 
     private static void scheduleReminderIfNeeded(Long scheduledTime, User creator, User interviewer)
     {
