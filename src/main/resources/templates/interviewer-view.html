@@ -40,6 +40,8 @@
 
 
 
+
+
     </style>
 </head>
 <body onload="initializeFirepad()">
@@ -53,7 +55,7 @@
         </div>
         <div class="panel-body">
             <p>
-                Link: <b>{{collabLink}}</b> <br/>
+                Link: <b><a>{{collabLink}}</a></b> <br/>
                 Comments: {{comments}} <br/>
                 Rating: <b>{{rating}}</b> <br/>
             </p>
@@ -76,7 +78,8 @@
     <img src="images/resume.png" width="16px" height="16px"> &nbsp;
     <span id="candidate_cv">{{candidate.cvLink}}</span> &nbsp; &nbsp; &nbsp; &nbsp;
 
-    <button type="button" id="end" class="btn btn-primary btn-danger" style="float: right; margin-right: 15px">End Interview
+    <button type="button" id="end" class="btn btn-primary btn-danger" style="float: right; margin-right: 15px">End
+        Interview
     </button>
 
 </div>
