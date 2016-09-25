@@ -1,9 +1,8 @@
 $(document).ready(function()
 {
-     getQuestions("platform");
+     getQuestions(role);
      var event = getFlockEvent();
      var userId = event.userId;
-     var groupId = event.chat;
      console.log("groupId: " + groupId);
      getInterviewers(groupId);
      $("#submit").click(function () {
@@ -15,11 +14,6 @@ $(document).ready(function()
          email = $("#email").val();
          editCandidate();
          flock.close();
-     });
-
-     $('#role').change(function(){
-         role = $('#role').val();
-         getQuestions(role);
      });
 
      function getTime(dateString) {
@@ -43,17 +37,15 @@ $(document).ready(function()
 
      function getQuestions(role) {
           console.log("Get questions for role: " + role)
-          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=" + groupId + "&sequence=1", "get", null, function (response) {
-            if(role == $('#role').val()) {
-                  $('#question').html('');
-                  questions = JSON.parse(response);
-                  $.each(questions, function (i, question) {
-                      $('#question').append($('<option>', {
-                          value: question.id,
-                          text : question.title + " (" + question.level + ")"
-                      }));
-                  });
-            }
+          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=" + groupId + "&sequence=2", "get", null, function (response) {
+          questions = JSON.parse(response);
+          $.each(questions, function (i, question) {
+              $('#question').append($('<option>', {
+                  value: question.id,
+                  text : question.title + " (" + question.level + ")"
+              }));
+          });
+
           });
      }
 

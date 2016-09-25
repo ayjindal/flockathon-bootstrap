@@ -60,7 +60,7 @@ public class MessagingService
                 getTrimmedName(interviewer.getName()) + "</user> Please help with this interview</flockml>");
         WidgetView widgetView = new WidgetView();
 
-        String widgetUrl = Runner.getBaseUrl() + "/edit" + "?email=" + candidate.getEmail();
+        String widgetUrl = round.getCollabLink() + "&email=" + candidate.getEmail();
         widgetView.setSrc(widgetUrl);
         Attachment attachment = new Attachment();
 
