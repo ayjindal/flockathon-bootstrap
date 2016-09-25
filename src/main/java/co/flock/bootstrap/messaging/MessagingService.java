@@ -17,7 +17,7 @@ public class MessagingService
 {
     private static final Logger _logger = Logger.getLogger(MessagingService.class);
     private static final Pattern _whitespacePattern = Pattern.compile("\\s+");
-    private static final String BOT_TOKEN = "c178e200-8619-4815-a348-8cf556c873ef";
+    private static final String BOT_TOKEN = "6fb9f926-1913-4d50-bd14-bbb7d8b2acb8";
 
     public void sendCreationMessage(Candidate candidate, Round round, User user, User interviewer)
     {

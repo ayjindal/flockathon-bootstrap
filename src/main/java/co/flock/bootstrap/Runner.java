@@ -124,6 +124,8 @@ public class Runner
             User interviewer = _dbManager.getUserById(roundObj.getInterviewerID());
             _dbManager.insertOrUpdateRound(roundObj);
             _messagingService.sendUpdationMessage(candidate, firstRound, roundObj, creator, interviewer);
+            MailServer.sendEmail(candidate.getEmail(), roundObj.getScheduledTime(),
+                    roundObj.getCollabLink().replace("interviewer-view", "candidate-view"));
             return "";
         });
 
@@ -153,6 +155,7 @@ public class Runner
 
             String roleString = req.queryParams("role");
             String sequenceNo = req.queryParams("sequence");
+            String email = req.queryParams("email");
 
             ROLE role = null;
             if (roleString != null) {
@@ -162,19 +165,30 @@ public class Runner
             String groupId = req.queryParams("groupId");
 
             List<Question> questionsList = _dbManager.getQuestions(role);
+            List<Round> rounds = new ArrayList<>(1);
+            if (email != null) {
+                rounds = _dbManager.getCandidateRounds(email);
+            }
+            Round prevRound = null;
+            if(!rounds.isEmpty()) {
+                prevRound = rounds.get(0);
+            }
             if (sequenceNo != null && role != null) {
-                questionsList = filterQuestionsBasedOnSequence(role, sequenceNo, questionsList);
+                questionsList = filterQuestionsBasedOnSequence(role, sequenceNo, questionsList, prevRound);
             }
 
             JSONArray questions = new JSONArray();
 
             for (Question question : questionsList) {
-                JSONObject ques = new JSONObject();
-                ques.put("id", question.getId());
-                ques.put("title", question.getTitle());
-                ques.put("level", question.getLevel());
-                ques.put("text", question.getText());
-                questions.put(ques);
+                if (!rounds.isEmpty()) {
+                    for (Round round : rounds) {
+                        if (question.getId() != Integer.parseInt(round.getQuestionID())) {
+                            putQuestion(questions, question);
+                        }
+                    }
+                } else {
+                    putQuestion(questions, question);
+                }
             }
 
             return questions.toString();
@@ -231,26 +245,37 @@ public class Runner
                 "chat-tab-view.html"), new MustacheTemplateEngine());
 
         get("/interviewers", (req, res) -> {
+            _logger.debug("getInterviewers");
             String groupId = req.queryParams("groupId");
             String userId = req.queryParams("userId");
+            String email = req.queryParams("email");
             User user = _dbManager.getUserById(userId);
-
             if (user != null) {
+                List<Round> rounds = new ArrayList<>(1);
+                if (email != null) {
+                    rounds = _dbManager.getCandidateRounds(email);
+                }
                 FlockApiClient flockApiClient = new FlockApiClient(user.getToken());
                 PublicProfile[] groupMembers = flockApiClient.getGroupMembers(groupId);
 
                 JSONArray jsonArray = new JSONArray();
                 for (PublicProfile publicProfile : groupMembers) {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("userId", publicProfile.getId());
-                    jsonObject.put("name", publicProfile.getFirstName() + ' ' + publicProfile.getLastName());
-                    jsonArray.put(jsonObject);
+                    if (!rounds.isEmpty()) {
+                        for (Round round : rounds) {
+                            if (!round.getInterviewerID().equalsIgnoreCase(publicProfile.getId())) {
+                                putPublicProfile(jsonArray, publicProfile);
+                            }
+                        }
+                    } else {
+                        putPublicProfile(jsonArray, publicProfile);
+                    }
+
                 }
 
                 return jsonArray;
             }
 
-            return "User doesnt exist";
+            return "User doesn't exist";
         });
 
         get("/interviewer-view", (request, response) -> {
@@ -276,6 +301,24 @@ public class Runner
             String email = req.queryParams("email");
             return new ModelAndView(getEditMap(email), "candidate-edit.html");
         }, new MustacheTemplateEngine());
+    }
+
+    private static void putQuestion(JSONArray questions, Question question)
+    {
+        JSONObject ques = new JSONObject();
+        ques.put("id", question.getId());
+        ques.put("title", question.getTitle());
+        ques.put("level", question.getLevel());
+        ques.put("text", question.getText());
+        questions.put(ques);
+    }
+
+    private static void putPublicProfile(JSONArray jsonArray, PublicProfile publicProfile)
+    {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("userId", publicProfile.getId());
+        jsonObject.put("name", publicProfile.getFirstName() + ' ' + publicProfile.getLastName());
+        jsonArray.put(jsonObject);
     }
 
     private static User getNextInterviewer(Candidate candidate, User user, Round round)
@@ -411,14 +454,15 @@ public class Runner
         return map;
     }
 
-    private static List<Question> filterQuestionsBasedOnSequence(ROLE role, String sequenceNo, List<Question> questionsList)
+    private static List<Question> filterQuestionsBasedOnSequence(ROLE role, String sequenceNo, List<Question> questionsList,
+                                                                 Round round)
     {
         int seqNo = Integer.parseInt(sequenceNo);
         LEVEL level;
         if (role == ROLE.PLATFORM) {
-            level = (seqNo == 1) ? LEVEL.MEDIUM : LEVEL.HARD;
+            level = (seqNo == 1) ? LEVEL.MEDIUM : round.getVerdict() == Round.VERDICT.PASS ? LEVEL.HARD : LEVEL.MEDIUM;
         } else {
-            level = (seqNo == 1) ? LEVEL.EASY : LEVEL.MEDIUM;
+            level = (seqNo == 1) ? LEVEL.EASY : round.getVerdict() == Round.VERDICT.PASS ? LEVEL.MEDIUM : LEVEL.EASY;
         }
 
         List<Question> filteredQuestions = new ArrayList<>(questionsList.size());
@@ -467,7 +511,8 @@ public class Runner
         return s;
     }
 
-    private static Map<String, Object> getEditMap(String email) throws SQLException {
+    private static Map<String, Object> getEditMap(String email) throws SQLException
+    {
         Candidate candidate = _dbManager.getCandidateByEmail(email);
         List<Round> candidateRounds = _dbManager.getCandidateRounds(email);
         Map<String, Object> map = new HashMap<>();

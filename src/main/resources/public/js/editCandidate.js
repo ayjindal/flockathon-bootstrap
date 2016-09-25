@@ -11,7 +11,6 @@ $(document).ready(function()
          date = $("#datepicker").find("input").val();
          time = $("#timepicker").find("input").val();
          time = getTime(date + " " + time);
-         email = $("#email").val();
          editCandidate();
          flock.close();
      });
@@ -23,7 +22,7 @@ $(document).ready(function()
 
      function getInterviewers(groupId) {
         console.log("Get interviewers for group: " + groupId + ", user: " + userId);
-        url = baseUrl + "interviewers?userId=" + userId + "&groupId=" + groupId + "&sequence=1";
+        url = baseUrl + "interviewers?userId=" + userId + "&groupId=" + groupId + "&sequence=1" + "&email=" + email;
         sendAjaxRequest(url, "get", null, function(response) {
             interviewers = JSON.parse(response);
              $.each(interviewers, function (i, interviewer) {
@@ -37,7 +36,7 @@ $(document).ready(function()
 
      function getQuestions(role) {
           console.log("Get questions for role: " + role)
-          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=" + groupId + "&sequence=2", "get", null, function (response) {
+          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=" + groupId + "&sequence=2" + "&email=" + email, "get", null, function (response) {
           questions = JSON.parse(response);
           $.each(questions, function (i, question) {
               $('#question').append($('<option>', {
