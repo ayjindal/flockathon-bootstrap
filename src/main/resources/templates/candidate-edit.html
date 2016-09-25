@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="css/pure-min.css">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/bootstrap-datepicker3.min.css">
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="https://apps-static.flock.co/js-sdk/0.1.0/flock.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.13.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/3.3.0/firebase.js"></script>
+
+    <!-- ACE and its JavaScript mode and theme files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-javascript.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/theme-textmate.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/util.js"></script>
+    <script src="js/initfirepad.js"></script>
+    <script src="js/editCandidate.js"></script>
+    <script type="text/javascript">
+            $(function () {
+                $('#timepicker').datetimepicker({
+                    format: 'HH:mm'
+                });
+            });
+
+            $(function () {
+                $('#datepicker').datetimepicker({
+                    format: 'DD/MM/YYYY'
+                });
+            });
+    </script>
+    <style>
+        html { height: 100%; }
+        body { margin: 0; height: 100%; }
+        #topbar { padding-top: 10px; padding-bottom: 10px; padding-left: 15px; width: 100%; color:#FFFFFF; font:
+        100 14px/1.4 'Helvetica Neue', monospace; background-color: #292F38; border-bottom: 1px solid white;
+        letter-spacing: 1px; }
+        img { vertical-align:middle; }
+        span { vertical-align:middle; }
+    </style>
+<body>
+<div id="topbar">
+
+    <img src="images/logo.png" width="32px" height="32px">
+    <span style="font-size: 18px; vertical-align:middle;"> Hyre App </span> &nbsp;&nbsp;&nbsp;&nbsp;
+    <img src="images/name.png" width="16px" height="16px"> &nbsp;
+    <span id="candidate_name">{{candidate.name}}</span> &nbsp; &nbsp; &nbsp; &nbsp;
+    <img src="images/email.png" width="16px" height="16px"> &nbsp;
+    <span id="candidate_email">{{candidate.email}}</span> &nbsp; &nbsp; &nbsp; &nbsp;
+    <img src="images/resume.png" width="16px" height="16px"> &nbsp;
+    <span id="candidate_cv">{{candidate.cvLink}}</span> &nbsp; &nbsp; &nbsp; &nbsp;
+
+</div>
+
+<div class="panel-body">
+    <div class="panel-group" id="accordion">
+        <!--{{#rounds}}-->
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Round #{{sequence}}</a>
+                </h4>
+            </div>
+            <div id="collapseOne" class="panel-collapse collapse">
+                <div class="panel-body">
+                    <b>Collab Link:</b> {{collabLink}} <br/>
+                    <b>Interviewer Comments:</b> {{comments}} <br/>
+                    <b>Rating:</b> {{rating}} <br/>
+                    <b>Verdict:</b> {{verdict}} <br/>
+                </div>
+            </div>
+        </div>
+        <!--{{/rounds}}-->
+    </div>
+</div>
+
+<form role="form">
+    <div class="col-md-12">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+            <h3>Interview Details </h3><br/>
+
+            <div class="form-group input-group">
+                <span class="input-group-addon">@</span>
+                <select id="interviewer" class="form-control">
+                    <option value="" disabled selected style="display: none;">Select Interviewer</option>
+                </select>
+            </div>
+            <br/>
+
+            <div class="form-group input-group">
+                <span class="input-group-addon">?</span>
+                <select id="question" class="form-control">
+                    <option value="" disabled selected style="display: none;">Select Question</option>
+                </select>
+            </div>
+            <br/>
+
+            <div class="form-group input-group date" id="datepicker">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-calendar"></span>
+                    </span>
+                <input type='text' data-format="dd-MM-yyyy" class="form-control"/>
+            </div>
+            <br/>
+
+            <div class="form-group input-group date" id="timepicker">
+                    <span class="input-group-addon">
+                        <span class="glyphicon glyphicon-time"></span>
+                    </span>
+                <input type='text' data-format="hh:mm" class="form-control"/>
+            </div>
+            <button id="submit" type="submit" class="btn btn-primary" style="margin: 0 auto; display:block;">
+                Submit
+            </button>
+        </div>
+        <div class="col-md-4"></div>
+    </div>
+</form>
+</body>
+</html>
