@@ -231,26 +231,37 @@ public class Runner
                 "chat-tab-view.html"), new MustacheTemplateEngine());
 
         get("/interviewers", (req, res) -> {
+            _logger.debug("getInterviewers");
             String groupId = req.queryParams("groupId");
             String userId = req.queryParams("userId");
+            String email = req.queryParams("email");
             User user = _dbManager.getUserById(userId);
-
             if (user != null) {
+                List<Round> rounds = new ArrayList<>(1);
+                if(email != null) {
+                    rounds = _dbManager.getCandidateRounds(email);
+                }
                 FlockApiClient flockApiClient = new FlockApiClient(user.getToken());
                 PublicProfile[] groupMembers = flockApiClient.getGroupMembers(groupId);
 
                 JSONArray jsonArray = new JSONArray();
                 for (PublicProfile publicProfile : groupMembers) {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("userId", publicProfile.getId());
-                    jsonObject.put("name", publicProfile.getFirstName() + ' ' + publicProfile.getLastName());
-                    jsonArray.put(jsonObject);
+                    if(!rounds.isEmpty()) {
+                        for(Round round : rounds) {
+                            if(!round.getInterviewerID().equalsIgnoreCase(publicProfile.getId())) {
+                                putPublicProfile(jsonArray, publicProfile);
+                            }
+                        }
+                    } else {
+                        putPublicProfile(jsonArray, publicProfile);
+                    }
+
                 }
 
                 return jsonArray;
             }
 
-            return "User doesnt exist";
+            return "User doesn't exist";
         });
 
         get("/interviewer-view", (request, response) -> {
@@ -276,6 +287,14 @@ public class Runner
             String email = req.queryParams("email");
             return new ModelAndView(getEditMap(email), "candidate-edit.html");
         }, new MustacheTemplateEngine());
+    }
+
+    private static void putPublicProfile(JSONArray jsonArray, PublicProfile publicProfile)
+    {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("userId", publicProfile.getId());
+        jsonObject.put("name", publicProfile.getFirstName() + ' ' + publicProfile.getLastName());
+        jsonArray.put(jsonObject);
     }
 
     private static User getNextInterviewer(Candidate candidate, User user, Round round)
