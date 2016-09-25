@@ -107,6 +107,26 @@ public class Runner
             return "";
         });
 
+        post("/edit", (req, res) -> {
+            _logger.debug("Received request with body: " + req.body());
+            JSONObject jsonObject = new JSONObject(req.body());
+            JSONObject round = jsonObject.getJSONObject("round");
+            String email = jsonObject.getString("email");
+            Candidate candidate = _dbManager.getCandidateByEmail(email);
+            _logger.debug("candidate: " + candidate);
+            String interviewerId = round.getString("interviewer_id");
+            String questionId = round.getString("question_id");
+            Long scheduledTime = round.getLong("scheduled_time");
+            String collabLink = round.getString("collab_link");
+            User creator = _dbManager.getUserById(candidate.getCreatorId());
+            Round roundObj = new Round(email, interviewerId, 2, collabLink, questionId, new Date(scheduledTime));
+            Round firstRound = _dbManager.getCandidateFirstRound(email);
+            User interviewer = _dbManager.getUserById(roundObj.getInterviewerID());
+            _dbManager.insertOrUpdateRound(roundObj);
+            _messagingService.sendUpdationMessage(candidate, firstRound, roundObj, creator, interviewer);
+            return "";
+        });
+
         post("/update", (req, res) -> {
             _logger.debug("Got request with body: " + req.body());
             JSONObject jsonObject = new JSONObject(req.body());

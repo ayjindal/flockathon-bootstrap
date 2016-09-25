@@ -40,7 +40,41 @@ public class MessagingService
 
         View view = new View();
         view.setWidget(widgetView);
-        view.setFlockml("<flockml> Name: " + candidate.getName() + "<br />" + "Collabedit Link: " + round.getCollabLink() + "</flockml>");
+        view.setFlockml("<flockml> Name: " + candidate.getName() + "<br />"
+                + "Collabedit Link: " + round.getCollabLink() + "</flockml>");
+        attachment.setViews(view);
+        message.setAttachments(new Attachment[]{attachment});
+        message.setMentions(new String[]{round.getInterviewerID()});
+        String messageJson = new Gson().toJson(message);
+        _logger.debug("messageJson: " + messageJson);
+        sendMessage(user.getToken(), message);
+    }
+
+    public void sendUpdationMessage(Candidate candidate, Round firstRound, Round round, User user, User interviewer)
+    {
+        _logger.debug("sendUpdationMessage candidate: " + candidate + "round: " + round);
+        Message message = new Message(candidate.getGroupId(), "@" +
+                getTrimmedName(interviewer.getName()) + " Please help with this interview");
+        message.setFlockml("<flockml><user userId=\"" + round.getInterviewerID() + "\">@" +
+                getTrimmedName(interviewer.getName()) + "</user> Please help with this interview</flockml>");
+        WidgetView widgetView = new WidgetView();
+
+        String widgetUrl = firstRound.getCollabLink() + "&email=" + candidate.getEmail();
+        widgetView.setSrc(widgetUrl);
+        Attachment attachment = new Attachment();
+
+        Button[] buttons = new Button[1];
+        buttons[0] = new Button();
+        buttons[0].setName("View");
+        Action action = new Action();
+        action.addOpenWidget(widgetUrl, "modal", "modal");
+        buttons[0].setAction(action);
+        attachment.setButtons(buttons);
+
+        View view = new View();
+        view.setWidget(widgetView);
+        view.setFlockml("<flockml> Name: " + candidate.getName() + "<br />"
+                + "Collabedit Link: " + round.getCollabLink() + "</flockml>");
         attachment.setViews(view);
         message.setAttachments(new Attachment[]{attachment});
         message.setMentions(new String[]{round.getInterviewerID()});
