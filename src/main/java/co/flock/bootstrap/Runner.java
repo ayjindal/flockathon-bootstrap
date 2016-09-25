@@ -153,6 +153,7 @@ public class Runner
 
             String roleString = req.queryParams("role");
             String sequenceNo = req.queryParams("sequence");
+            String email = req.queryParams("email");
 
             ROLE role = null;
             if (roleString != null) {
@@ -166,15 +167,23 @@ public class Runner
                 questionsList = filterQuestionsBasedOnSequence(role, sequenceNo, questionsList);
             }
 
+            List<Round> rounds = new ArrayList<>(1);
+            if(email != null) {
+                rounds = _dbManager.getCandidateRounds(email);
+            }
+
             JSONArray questions = new JSONArray();
 
             for (Question question : questionsList) {
-                JSONObject ques = new JSONObject();
-                ques.put("id", question.getId());
-                ques.put("title", question.getTitle());
-                ques.put("level", question.getLevel());
-                ques.put("text", question.getText());
-                questions.put(ques);
+                if(!rounds.isEmpty()) {
+                    for(Round round : rounds) {
+                        if(question.getId() != Integer.parseInt(round.getQuestionID())) {
+                            putQuestion(questions, question);
+                        }
+                    }
+                } else {
+                    putQuestion(questions, question);
+                }
             }
 
             return questions.toString();
@@ -287,6 +296,16 @@ public class Runner
             String email = req.queryParams("email");
             return new ModelAndView(getEditMap(email), "candidate-edit.html");
         }, new MustacheTemplateEngine());
+    }
+
+    private static void putQuestion(JSONArray questions, Question question)
+    {
+        JSONObject ques = new JSONObject();
+        ques.put("id", question.getId());
+        ques.put("title", question.getTitle());
+        ques.put("level", question.getLevel());
+        ques.put("text", question.getText());
+        questions.put(ques);
     }
 
     private static void putPublicProfile(JSONArray jsonArray, PublicProfile publicProfile)

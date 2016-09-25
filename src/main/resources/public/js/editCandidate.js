@@ -36,7 +36,7 @@ $(document).ready(function()
 
      function getQuestions(role) {
           console.log("Get questions for role: " + role)
-          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=" + groupId + "&sequence=2", "get", null, function (response) {
+          sendAjaxRequest(baseUrl + "questions?role=" + role + "&groupId=" + groupId + "&sequence=2" + "&email=" + email, "get", null, function (response) {
           questions = JSON.parse(response);
           $.each(questions, function (i, question) {
               $('#question').append($('<option>', {
