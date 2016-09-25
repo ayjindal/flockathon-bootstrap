@@ -163,21 +163,24 @@ public class Runner
             String groupId = req.queryParams("groupId");
 
             List<Question> questionsList = _dbManager.getQuestions(role);
-            if (sequenceNo != null && role != null) {
-                questionsList = filterQuestionsBasedOnSequence(role, sequenceNo, questionsList);
-            }
-
             List<Round> rounds = new ArrayList<>(1);
-            if(email != null) {
+            if (email != null) {
                 rounds = _dbManager.getCandidateRounds(email);
+            }
+            Round prevRound = null;
+            if(!rounds.isEmpty()) {
+                prevRound = rounds.get(0);
+            }
+            if (sequenceNo != null && role != null) {
+                questionsList = filterQuestionsBasedOnSequence(role, sequenceNo, questionsList, prevRound);
             }
 
             JSONArray questions = new JSONArray();
 
             for (Question question : questionsList) {
-                if(!rounds.isEmpty()) {
-                    for(Round round : rounds) {
-                        if(question.getId() != Integer.parseInt(round.getQuestionID())) {
+                if (!rounds.isEmpty()) {
+                    for (Round round : rounds) {
+                        if (question.getId() != Integer.parseInt(round.getQuestionID())) {
                             putQuestion(questions, question);
                         }
                     }
@@ -247,7 +250,7 @@ public class Runner
             User user = _dbManager.getUserById(userId);
             if (user != null) {
                 List<Round> rounds = new ArrayList<>(1);
-                if(email != null) {
+                if (email != null) {
                     rounds = _dbManager.getCandidateRounds(email);
                 }
                 FlockApiClient flockApiClient = new FlockApiClient(user.getToken());
@@ -255,9 +258,9 @@ public class Runner
 
                 JSONArray jsonArray = new JSONArray();
                 for (PublicProfile publicProfile : groupMembers) {
-                    if(!rounds.isEmpty()) {
-                        for(Round round : rounds) {
-                            if(!round.getInterviewerID().equalsIgnoreCase(publicProfile.getId())) {
+                    if (!rounds.isEmpty()) {
+                        for (Round round : rounds) {
+                            if (!round.getInterviewerID().equalsIgnoreCase(publicProfile.getId())) {
                                 putPublicProfile(jsonArray, publicProfile);
                             }
                         }
@@ -449,14 +452,15 @@ public class Runner
         return map;
     }
 
-    private static List<Question> filterQuestionsBasedOnSequence(ROLE role, String sequenceNo, List<Question> questionsList)
+    private static List<Question> filterQuestionsBasedOnSequence(ROLE role, String sequenceNo, List<Question> questionsList,
+                                                                 Round round)
     {
         int seqNo = Integer.parseInt(sequenceNo);
         LEVEL level;
         if (role == ROLE.PLATFORM) {
-            level = (seqNo == 1) ? LEVEL.MEDIUM : LEVEL.HARD;
+            level = (seqNo == 1) ? LEVEL.MEDIUM : round.getVerdict() == Round.VERDICT.PASS ? LEVEL.HARD : LEVEL.MEDIUM;
         } else {
-            level = (seqNo == 1) ? LEVEL.EASY : LEVEL.MEDIUM;
+            level = (seqNo == 1) ? LEVEL.EASY : round.getVerdict() == Round.VERDICT.PASS ? LEVEL.MEDIUM : LEVEL.EASY;
         }
 
         List<Question> filteredQuestions = new ArrayList<>(questionsList.size());
@@ -505,7 +509,8 @@ public class Runner
         return s;
     }
 
-    private static Map<String, Object> getEditMap(String email) throws SQLException {
+    private static Map<String, Object> getEditMap(String email) throws SQLException
+    {
         Candidate candidate = _dbManager.getCandidateByEmail(email);
         List<Round> candidateRounds = _dbManager.getCandidateRounds(email);
         Map<String, Object> map = new HashMap<>();

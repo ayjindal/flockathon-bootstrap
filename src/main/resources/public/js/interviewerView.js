@@ -7,7 +7,7 @@ $(document).ready(function()
          email = $("#candidate_email").text();
          interviewerId = event.userId;
          rating = "4"; // TODO soft code
-         verdict = "pass"; // TODO soft code
+         verdict = "reject"; // TODO soft code
          comments = $('textarea#comments').val();
          console.log("comments: " + comments);
          updateRound();
