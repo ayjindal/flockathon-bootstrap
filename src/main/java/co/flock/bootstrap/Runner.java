@@ -69,6 +69,11 @@ public class Runner
                 String userId = jsonObject.getString("userId");
                 _dbManager.deleteUser(new User(userId, ""));
                 _logger.debug("User deleted : " + userId);
+            } else if ("client.pressButton".equalsIgnoreCase(type)) {
+                JSONObject toast = new JSONObject();
+                toast.put("text", "Candidate marked as processed");
+                _logger.debug(toast);
+                return toast;
             }
 
             return "";
