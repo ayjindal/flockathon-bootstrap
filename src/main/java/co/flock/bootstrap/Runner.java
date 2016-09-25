@@ -101,7 +101,7 @@ public class Runner
             User creator = _dbManager.getUserById(candidateObj.getCreatorId());
             User interviewer = _dbManager.getUserById(roundObj.getInterviewerID());
             _messagingService.sendCreationMessage(candidateObj, roundObj, creator, interviewer);
-            MailServer.sendEmail(candidateObj.getEmail(), roundObj.getScheduledTime(),
+            MailServer.sendEmail(candidateObj.getEmail(), candidateObj.getName(), roundObj.getScheduledTime(),
                     roundObj.getCollabLink().replace("interviewer-view", "candidate-view"));
             scheduleReminderIfNeeded(scheduledTime, creator, interviewer);
             return "";
@@ -124,7 +124,7 @@ public class Runner
             User interviewer = _dbManager.getUserById(roundObj.getInterviewerID());
             _dbManager.insertOrUpdateRound(roundObj);
             _messagingService.sendUpdationMessage(candidate, firstRound, roundObj, creator, interviewer);
-            MailServer.sendEmail(candidate.getEmail(), roundObj.getScheduledTime(),
+            MailServer.sendEmail(candidate.getEmail(), candidate.getName(), roundObj.getScheduledTime(),
                     roundObj.getCollabLink().replace("interviewer-view", "candidate-view"));
             return "";
         });
@@ -144,8 +144,7 @@ public class Runner
             _dbManager.updateRound(email, interviewerId, comments, ratingFloat, v);
             Candidate candidate = _dbManager.getCandidateByEmail(email);
             User user = _dbManager.getUserById(interviewerId);
-            User nextInterviewer = getNextInterviewer(candidate, user, round);
-            _messagingService.sendRoundEndedMessage(candidate, user, nextInterviewer, round);
+            _messagingService.sendRoundEndedMessage(candidate, user);
             _logger.debug("Done updating the round");
             return "";
         });

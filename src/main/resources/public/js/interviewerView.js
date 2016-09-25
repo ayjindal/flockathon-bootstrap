@@ -35,6 +35,7 @@ $(document).ready(function()
           } else {
          comments = $('#comments').val();
          console.log("comments: " + comments);
+         rating = $('#rating').val();
          console.log("rating: " + rating);
          console.log("verdict: " + verdict);
 

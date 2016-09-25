@@ -17,7 +17,7 @@ public class MessagingService
 {
     private static final Logger _logger = Logger.getLogger(MessagingService.class);
     private static final Pattern _whitespacePattern = Pattern.compile("\\s+");
-    private static final String BOT_TOKEN = "6fb9f926-1913-4d50-bd14-bbb7d8b2acb8";
+    private static final String BOT_TOKEN = "7a0fed23-a763-4729-8966-7c43e18fccad";
 
     public void sendCreationMessage(Candidate candidate, Round round, User user, User interviewer)
     {
@@ -84,24 +84,24 @@ public class MessagingService
         sendMessage(user.getToken(), message);
     }
 
-    public void sendRoundEndedMessage(Candidate candidate, User interviewer, User nextInterviewer, Round prevRound)
+    public void sendRoundEndedMessage(Candidate candidate, User interviewer)
     {
         _logger.debug("sendRoundEndedMessage candidate: " +
-                candidate + " interviewer: " + interviewer + " next: " + nextInterviewer);
-        sendMessageToCreator(candidate, nextInterviewer, prevRound);
-        sendMessageToInterviewer(candidate, interviewer, prevRound.getVerdict().toString());
+                candidate + " interviewer: " + interviewer);
+        sendMessageToCreator(candidate);
+        sendMessageToInterviewer(candidate, interviewer);
     }
 
-    private void sendMessageToInterviewer(Candidate candidate, User interviewer, String verdict)
+    private void sendMessageToInterviewer(Candidate candidate, User interviewer)
     {
         Message message = new Message(interviewer.getId(),
-                "Thank you for taking the interview for" + candidate.getName());
+                "Thanks for taking the interview for " + candidate.getName());
         String messageJson = new Gson().toJson(message);
         _logger.debug("messageJson: " + messageJson);
         sendMessage(BOT_TOKEN, message);
     }
 
-    private void sendMessageToCreator(Candidate candidate, User interviewer, Round round)
+    private void sendMessageToCreator(Candidate candidate)
     {
         Message message = new Message(candidate.getCreatorId(),
                 "Interview ended for " + candidate.getName());
@@ -121,7 +121,7 @@ public class MessagingService
         buttons[1].setName("Finish");
         action = new Action();
         action.addDispatchEvent();
-        buttons[0].setAction(action);
+        buttons[1].setAction(action);
         attachment.setButtons(buttons);
 
         View view = new View();
