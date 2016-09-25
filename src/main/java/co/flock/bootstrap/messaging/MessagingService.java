@@ -1,5 +1,6 @@
 package co.flock.bootstrap.messaging;
 
+import co.flock.bootstrap.Runner;
 import co.flock.bootstrap.database.Candidate;
 import co.flock.bootstrap.database.Round;
 import co.flock.bootstrap.database.User;
@@ -16,7 +17,7 @@ public class MessagingService
 {
     private static final Logger _logger = Logger.getLogger(MessagingService.class);
     private static final Pattern _whitespacePattern = Pattern.compile("\\s+");
-    private static final String BOT_TOKEN = "c0532cdb-b59a-4605-94b5-cb8f244f02d3";
+    private static final String BOT_TOKEN = "c178e200-8619-4815-a348-8cf556c873ef";
 
     public void sendCreationMessage(Candidate candidate, Round round, User user, User interviewer)
     {
@@ -59,7 +60,7 @@ public class MessagingService
                 getTrimmedName(interviewer.getName()) + "</user> Please help with this interview</flockml>");
         WidgetView widgetView = new WidgetView();
 
-        String widgetUrl = firstRound.getCollabLink() + "&email=" + candidate.getEmail();
+        String widgetUrl = round.getCollabLink() + "&email=" + candidate.getEmail();
         widgetView.setSrc(widgetUrl);
         Attachment attachment = new Attachment();
 
@@ -105,7 +106,7 @@ public class MessagingService
         Message message = new Message(candidate.getCreatorId(),
                 "Interview ended for " + candidate.getName());
         WidgetView widgetView = new WidgetView();
-        String widgetUrl = round.getCollabLink() + "&email=" + candidate.getEmail();
+        String widgetUrl =  Runner.getBaseUrl() + "edit" + "?email=" + candidate.getEmail();
         widgetView.setSrc(widgetUrl);
         Attachment attachment = new Attachment();
 

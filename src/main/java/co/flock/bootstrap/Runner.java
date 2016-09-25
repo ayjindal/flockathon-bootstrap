@@ -271,6 +271,11 @@ public class Runner
 
         get("/new", (req, res) -> new ModelAndView(map, "candidate-new.html"),
                 new MustacheTemplateEngine());
+
+        get("/edit", (req, res) -> {
+            String email = req.queryParams("email");
+            return new ModelAndView(getEditMap(email), "candidate-edit.html");
+        }, new MustacheTemplateEngine());
     }
 
     private static User getNextInterviewer(Candidate candidate, User user, Round round)
@@ -460,5 +465,14 @@ public class Runner
         Map<String, List<Candidate>> s = new HashMap<>();
         s.put("candidates", candidates);
         return s;
+    }
+
+    private static Map<String, Object> getEditMap(String email) throws SQLException {
+        Candidate candidate = _dbManager.getCandidateByEmail(email);
+        List<Round> candidateRounds = _dbManager.getCandidateRounds(email);
+        Map<String, Object> map = new HashMap<>();
+        map.put("candidate", candidate);
+        map.put("rounds", candidateRounds);
+        return map;
     }
 }
