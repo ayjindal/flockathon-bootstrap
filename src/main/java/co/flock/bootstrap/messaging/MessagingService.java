@@ -1,5 +1,6 @@
 package co.flock.bootstrap.messaging;
 
+import co.flock.bootstrap.Runner;
 import co.flock.bootstrap.database.Candidate;
 import co.flock.bootstrap.database.Round;
 import co.flock.bootstrap.database.User;
@@ -105,7 +106,7 @@ public class MessagingService
         Message message = new Message(candidate.getCreatorId(),
                 "Interview ended for " + candidate.getName());
         WidgetView widgetView = new WidgetView();
-        String widgetUrl = round.getCollabLink() + "&email=" + candidate.getEmail();
+        String widgetUrl =  Runner.getBaseUrl() + "edit" + "?email=" + candidate.getEmail();
         widgetView.setSrc(widgetUrl);
         Attachment attachment = new Attachment();
 
