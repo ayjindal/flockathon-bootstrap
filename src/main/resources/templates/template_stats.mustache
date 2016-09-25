@@ -4,16 +4,79 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/2.2.1/mustache.min.js"></script>
     <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js"></script>
+    <script src="morrisjs/morris.min.js"></script>
+    <script src="raphael/raphael.min.js"></script>
     <link rel="stylesheet" href="css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="css/sb-admin-2.min.css"/>
+    <link rel="stylesheet" href="morrisjs/morris.css"/>
+    <link rel="stylesheet" href="css/font-awesome.min.css"/>
+
+    <script style="text/javascript">
+        $(function () {
+                Morris.Donut({
+                    element: 'morris-donut-chart-1',
+                    data: [{
+                        label: "Pending",
+                        value: {{pending}}
+                    }, {
+                        label: "Processed",
+                        value: {{completed}}
+                    }]
+                });
+            });
+        $(function () {
+                Morris.Bar({
+                    element: 'morris-line-chart-2',
+                    data: [
+                    {{#scores}}
+                    {
+                        x: '{{name}}',
+                        y: {{score}}
+                    },
+                    {{/scores}}
+                    ],
+                    xkey: 'x',
+                    ykeys: ['y'],
+                    labels: ['Score'],
+                    resize: true
+                });
+        });
+    </script>
 <body>
 
-<div id="top" align="center">
+<div id="top">
 
-    <h1>Stats</h1>
+    <div class="col-lg-4">
+        <h5>Stats</h5>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Candidate Status
+            </div>
+            <div class="panel-body">
+                <div id="morris-donut-chart-1"></div>
+            </div>
+            <div class="panel-footer">
+                Total Candidates <span class="label label-primary"> {{total}}</span><br />
+                Pending Candidates <span class="label label-default"> {{pending}}</span><br />
+                Processed Candidates <span class="label label-default"> {{completed}}</span>
+            </div>
+        </div>
+    </div>
 
-    <h3>Total Candidates <span class="label label-default"> {{total}}</span></h3>
-    <h3>Pending Candidates <span class="label label-default"> {{pending}}</span></h3>
-    <h3>Processed Candidates <span class="label label-default"> {{completed}}</span></h3>
+    <div class="col-lg-4">
+        <h5>Stats</h5>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Interviewer Scores
+            </div>
+            <div class="panel-body">
+                <div id="morris-line-chart-2"></div>
+            </div>
+            <div class="panel-footer">
+
+            </div>
+        </div>
+    </div>
 
 
     <div class="col-lg-6">
