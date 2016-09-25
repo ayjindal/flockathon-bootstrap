@@ -30,7 +30,6 @@ $(document).ready(function()
          name = $("#candidate_name").text();
          email = $("#candidate_email").text();
          interviewerId = event.userId;
-         rating = $("#rating").val();
          if(verdict === "undecided")  {
               alert('Please select verdict');
           } else {
