@@ -265,10 +265,8 @@ public class Runner
                 JSONArray jsonArray = new JSONArray();
                 for (PublicProfile publicProfile : groupMembers) {
                     if (!rounds.isEmpty()) {
-                        for (Round round : rounds) {
-                            if (!round.getInterviewerID().equalsIgnoreCase(publicProfile.getId())) {
-                                putPublicProfile(jsonArray, publicProfile);
-                            }
+                        if (!contains(rounds, publicProfile.getId())) {
+                            putPublicProfile(jsonArray, publicProfile);
                         }
                     } else {
                         putPublicProfile(jsonArray, publicProfile);
@@ -305,6 +303,16 @@ public class Runner
             String email = req.queryParams("email");
             return new ModelAndView(getEditMap(email), "candidate-edit.html");
         }, new MustacheTemplateEngine());
+    }
+
+    private static boolean contains(List<Round> rounds, String interviewerId)
+    {
+        for (Round round : rounds) {
+            if (round.getInterviewerID().equalsIgnoreCase(interviewerId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static void putQuestion(JSONArray questions, Question question)

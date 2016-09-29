@@ -68,12 +68,12 @@
         <div class="panel panel-primary">
             <div class="panel-heading">
                 <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne">Round #{{sequence}}</a>
+                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse{{sequence}}">Round #{{sequence}}</a>
                 </h4>
             </div>
-            <div id="collapseOne" class="panel-collapse collapse">
+            <div id="collapse{{sequence}}" class="panel-collapse collapse">
                 <div class="panel-body">
-                    <b>Collab Link:</b> {{collabLink}} <br/>
+                    <b>Collab Link:</b> <a href="{{collabLink}} ">{{collabLink}} </a> <br/>
                     <b>Interviewer Comments:</b> {{comments}} <br/>
                     <b>Rating:</b> {{rating}} <br/>
                     <b>Verdict:</b> {{verdict}} <br/>
