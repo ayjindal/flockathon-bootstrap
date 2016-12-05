@@ -87,8 +87,8 @@ public class DbManager
             QueryBuilder<Question, String> queryBuilder = _questionDao.queryBuilder();
             Where<Question, String> where = queryBuilder.where();
             where.eq(DbConstants.Fields.ROLE, role);
-            where.and();
-            where.eq(DbConstants.Fields.GROUP_ID, groupId);
+//            where.and();
+//            where.eq(DbConstants.Fields.GROUP_ID, groupId);
             PreparedQuery<Question> preparedQuery = queryBuilder.prepare();
             return _questionDao.query(preparedQuery);
         } else {

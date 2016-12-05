@@ -6,7 +6,6 @@ import co.flock.bootstrap.database.Round;
 import co.flock.bootstrap.database.User;
 import co.flock.www.FlockApiClient;
 import co.flock.www.model.messages.Attachments.*;
-import co.flock.www.model.messages.FlockMessage;
 import co.flock.www.model.messages.Message;
 import com.google.gson.Gson;
 import org.apache.log4j.Logger;
@@ -106,7 +105,7 @@ public class MessagingService
         Message message = new Message(candidate.getCreatorId(),
                 "Interview ended for " + candidate.getName());
         WidgetView widgetView = new WidgetView();
-        String widgetUrl =  Runner.getBaseUrl() + "edit" + "?email=" + candidate.getEmail();
+        String widgetUrl = Runner.getBaseUrl() + "edit" + "?email=" + candidate.getEmail();
         widgetView.setSrc(widgetUrl);
         Attachment attachment = new Attachment();
 
@@ -148,10 +147,9 @@ public class MessagingService
     public static void sendMessage(String token, Message message)
     {
         _logger.debug("Sending message to  : " + message.getTo() + " text : " + message.getText());
-        FlockMessage flockMessage = new FlockMessage(message);
         FlockApiClient flockApiClient = new FlockApiClient(token);
         try {
-            String responseBody = flockApiClient.chatSendMessage(flockMessage);
+            String responseBody = flockApiClient.chatSendMessage(message);
             _logger.debug("responseBody: " + responseBody);
         } catch (Exception e) {
             _logger.error("Failed to send message: ", e);
